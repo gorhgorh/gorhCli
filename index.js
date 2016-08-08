@@ -14,38 +14,32 @@ vorpal
   .delimiter('gorhCLI $')
   .show()
 
-
+// get path of where the command is ran
 function getPwd () {
   return pwd().stdout
 }
 
+// get the base repo files via snv to avoi .git data
+// TODO : put url in a config file
 function getBase (dest) {
   if (!dest) dest = './.tmp'
   exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ' + dest + ' --force ', { silent: true }, () => {
   })
 }
 
+// git and Npm init commands
+// TODO : add a remote entry in the config file and set it here
 function cliInit () {
   console.log('initialising the git repo')
   exec('git init')
   console.log('creating default package.json')
   exec('npm init --yes')
+  exec('npm -D standard') // optional ?
 }
 
-// check if a dir is empty
-function isEmpty (cb) {
-  var items = [] // files, directories, symlinks, etc
-  var isE
-  fs.walk(getPwd())
-    .on('data', function (item) {
-      items.push(item.path)
-    })
-    .on('end', function () {
-      if (items.length > 1) isE = false
-      else isE = true
-      // console.dir(items) // => [ ... array of files]
-      cb(isE)
-    })
+function clearDir () {
+  rm('-rf', './.*')
+  rm('-rf', './*')
 }
 
 // CLI commands
@@ -107,10 +101,8 @@ vorpal
       message: msg
     }, function (result) {
       if (result.erase) {
-        // skip the prompts if a width was supplied
         self.log('erasing')
-        rm('-rf', './.*')
-        rm('-rf', './*')
+        clearDir()
       } else {
         cb()
       }
@@ -139,20 +131,10 @@ vorpal
       message: 'write manifests ?'
     }, function (result) {
       if (result.makeMan) {
-        // skip the prompts if a width was supplied
         self.log('writting manifests')
         makeMan(imsConfs, imsPath)
-        // rm('-rf', './.*')
-        // rm('-rf', './*')
       } else {
         cb()
       }
     })
   })
-
-// console.log(getPwd())
-  // getBase()
-
-
-
-  // initDir()
