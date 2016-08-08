@@ -123,7 +123,7 @@ vorpal
     const self = this
     var manP = path.join(getPwd(), 'imsConfigs.json')
     if (checkFileExistsSync(manP) !== true) {
-      self.log('missing imsConfigs.json')
+      self.log('missing imsConfigs.json, create one and rerun ')
       return cb()
     }
     self.log('found imsConfigs.json')
