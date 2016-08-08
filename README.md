@@ -1,6 +1,6 @@
 # gorhCli
 
-experiment around the vorpal framework to make an CLI for out uses at yes 
+experiment around the vorpal framework to make an CLI for out uses at yes and for my personal use
 
 ## usage 
 
@@ -20,4 +20,9 @@ to invoke
 - ```init``` initialise dir (git, package.json, editor config)
 - ```man``` make manifest, read a imsconfigs.json files and output manifests
 
-svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./dir
+## to do
+
+- add zip
+- add sftp uploads (rsync ?)
+- make/read config file in folder
+- make zip for scorm 
