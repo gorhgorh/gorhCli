@@ -2,20 +2,26 @@
 /*global pwd exec rm*/
 // const path = require('path')
 // const pathos = '/gorhgorh/baseNodeRepo/archive/master.zip'
-const fs = require('fs-extra')
+'use strict'
 require('shelljs/global')
+const fs = require('fs-extra')
+const path = require('path')
+const makeMan = require('./tools/manifestMod')
 
 var vorpal = require('vorpal')()
+
+vorpal
+  .delimiter('gorhCLI $')
+  .show()
+
 
 function getPwd () {
   return pwd().stdout
 }
 
-function getBase (dest, cb, action) {
+function getBase (dest) {
   if (!dest) dest = './.tmp'
-  exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ' + dest + ' --force ', { silent: true }, (code, stdout, stderr) => {
-    action.log('clonned base proj')
-    cb()
+  exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ' + dest + ' --force ', { silent: true }, () => {
   })
 }
 
@@ -25,53 +31,6 @@ function cliInit () {
   console.log('creating default package.json')
   exec('npm init --yes')
 }
-
-// var duckCount = 0
-// var wabbitCount = 0
-
-// duck
-// vorpal
-//   .command('duck', 'Outputs "rabbit"')
-//   .action(function (args, callback) {
-//     this.log('Wabbit')
-//     callback()
-//   })
-// vorpal
-//   .command('duck season', 'Outputs "rabbit season"')
-//   .action(function (args, callback) {
-//     duckCount++
-//     this.log('Wabbit season')
-//     callback()
-//   })
-
-// // wabbit
-// vorpal
-//   .command('wabbit', 'Outputs "duck"')
-//   .action(function (args, callback) {
-//     this.log('Duck')
-//     callback()
-//   })
-// vorpal
-//   .command('wabbit season', 'Outputs "duck season"')
-//   .action(function (args, callback) {
-//     // no cheating
-//     if (duckCount < 2) {
-//       duckCount = 0
-//       this.log("You're despicable")
-//       callback()
-//     } else if (wabbitCount === 0) {
-//       wabbitCount++
-//       this.log('Duck season')
-//       callback()
-//     } else {
-//       this.log("I say it's duck season. And I say fire!")
-//       vorpal.ui.cancel()
-//     }
-//   })
-
-// vorpal
-//   .delimiter('daffy$')
-//   .show()
 
 // check if a dir is empty
 function isEmpty (cb) {
@@ -89,24 +48,18 @@ function isEmpty (cb) {
     })
 }
 
-function initDir () {
-  isEmpty(function (isE) { console.log(isE, 'isE') })
-}
-
 // CLI commands
 
 function initConfirm (v, cb) {
-  console.log('yuppi init confirms')
   var self = v
   self.prompt({
     type: 'confirm',
     name: 'continue',
-    default: false,
+    default: true,
     message: 'dir is not empty, initilalise ?'
   }, function (result) {
     if (result.continue) {
       // skip the prompts if a width was supplied
-      self.log('continue')
       initProj(cb, self)
     } else {
       cb()
@@ -114,14 +67,19 @@ function initConfirm (v, cb) {
   })
 }
 
-function cleanup () {
-
+// cjecks is a file exist
+function checkFileExistsSync (filepath) {
+  let flag = true
+  try {
+    fs.accessSync(filepath, fs.F_OK)
+  } catch (e) {
+    flag = false
+  }
+  return flag
 }
 
-
-function initProj (self, cb) {
-  self.log('getting base files')
-  getBase('./', cb, self)
+function initProj () {
+  getBase('./')
   cliInit()
 }
 
@@ -159,13 +117,42 @@ vorpal
     })
   })
 
-// console.log(getPwd())
-// getBase()
-
 vorpal
-  .delimiter('gorhCLI $')
-  .show()
+  .command('man', 'make manifest')
+  .action(function (args, cb) {
+    const self = this
+    var manP = path.join(getPwd(), 'imsConfigs.json')
+    if (checkFileExistsSync(manP) !== true) {
+      self.log('missing imsConfigs.json')
+      return cb()
+    }
+    self.log('found imsConfigs.json')
+    var imsConfs = fs.readJsonSync(manP)
+    var imsPath = path.join(getPwd(), imsConfs.path)
 
-// initDir()
+    fs.ensureDirSync(imsPath)
+
+    this.prompt({
+      type: 'confirm',
+      name: 'makeMan',
+      default: false,
+      message: 'write manifests ?'
+    }, function (result) {
+      if (result.makeMan) {
+        // skip the prompts if a width was supplied
+        self.log('writting manifests')
+        makeMan(imsConfs, imsPath)
+        // rm('-rf', './.*')
+        // rm('-rf', './*')
+      } else {
+        cb()
+      }
+    })
+  })
+
+// console.log(getPwd())
+  // getBase()
 
 
+
+  // initDir()
