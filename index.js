@@ -141,3 +141,38 @@ vorpal
       }
     })
   })
+
+vorpal
+  .command('ls', 'test list ')
+  .action(function (args, cb) {
+    const self = this
+    console.dir(args)
+    self.log('yo')
+    self.prompt({
+      type: 'list',
+      name: 'test',
+      message: 'list of things',
+      choices: ['1', 'deux', 'tres', 'quattro']
+    }, function (result) {
+      console.log(result)
+      cb()
+    })
+  })
+
+vorpal
+  .command('rd', 'test radio ')
+  .action(function (args, cb) {
+    const self = this
+    console.dir(args)
+    self.log('yo')
+    self.prompt({
+      type: 'checkbox',
+      name: 'radio',
+      message: 'list of things',
+      choices: ['1', 'deux', 'tres', 'quattro']
+    }, function (result) {
+      console.log(result)
+      cb()
+    })
+  })
+
