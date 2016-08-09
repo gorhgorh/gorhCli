@@ -34,7 +34,10 @@ function cliInit () {
   exec('git init')
   console.log('creating default package.json')
   exec('npm init --yes')
-  exec('npm -D standard') // optional ?
+  exec('npm install -D standard') // optional ?
+  var pkg = fs.readJsonSync('./package.json')
+  pkg.scripts.test = 'standard'
+  fs.writeJsonSync('./package.json', pkg)
 }
 
 function clearDir () {
