@@ -3,7 +3,7 @@ var fs = require('fs')
 var _ = require('lodash')
 var assert = require('assert')
 var path = require('path')
-var manifestPath = path.join(__dirname) + '/imsmanifest.xml'
+var manifestPath = path.join(__dirname, '../templates/imsmanifest.xml')
 
 var manifestData = fs.readFileSync(manifestPath, 'UTF-8')
 var compiled = _.template(manifestData)

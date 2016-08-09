@@ -1,0 +1,47 @@
+{
+  "path": "builds",
+  "courses": {
+  "course-00": {
+    "scId":"Module 0. CL Underwriting fundamentals programme",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M00_manifest",
+    "scScormUid":"AXA_UW_M00_scorm"
+  },
+  "course-01-en":{
+    "scId":"Module 1. CL Customer needs",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M01_manifest",
+    "scScormUid":"AXA_UW_M01_scorm"
+  },
+  "course-02-en":{
+    "scId":"Module 2. CL Customer needs",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M02_manifest",
+    "scScormUid":"AXA_UW_M02_scorm"
+  },
+  "course-03-en":{
+    "scId":"Module 3. CL Market",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M03_manifest",
+    "scScormUid":"AXA_UW_M03_scorm"
+  },
+  "course-04-en":{
+    "scId":"Module 4. CL Strategy",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M04_manifest",
+    "scScormUid":"AXA_UW_M04_scorm"
+  },
+  "course-05-en":{
+    "scId":"Module 5. CL Underwriter role in AXA",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M05_manifest",
+    "scScormUid":"AXA_UW_M05_scorm"
+  },
+  "course-06-en":{
+    "scId":"Module 6. CL Group standards",
+    "scTxt": "",
+    "scManifest":"AXA_UW_M05_manifest",
+    "scScormUid":"AXA_UW_M05_scorm"
+  }
+}
+}
