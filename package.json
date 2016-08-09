@@ -22,6 +22,7 @@
   "homepage": "https://github.com/gorhgorh/gorhCli#readme",
   "dependencies": {
     "archiver": "^1.0.1",
+    "cson": "^3.0.2",
     "fs-extra": "^0.30.0",
     "lodash": "^4.14.2",
     "shelljs": "^0.7.3",

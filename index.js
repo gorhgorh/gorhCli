@@ -7,19 +7,17 @@ require('shelljs/global')
 const fs = require('fs-extra')
 const path = require('path')
 const makeMan = require('./tools/manifestMod')
+const cson = require('cson')
 
 var vorpal = require('vorpal')()
 
 vorpal
   .delimiter('gorhCLI $')
   .show()
+// caches the path of the dir where the cli have been inited
+var cliDir = pwd().stdout
 
-// get path of where the command is ran
-function getPwd () {
-  return pwd().stdout
-}
-
-// get the base repo files via snv to avoi .git data
+// get the base repo files via snv to avoid .git data
 // TODO : put url in a config file
 function getBase (dest) {
   if (!dest) dest = './.tmp'
@@ -40,12 +38,22 @@ function cliInit () {
   fs.writeJsonSync('./package.json', pkg)
 }
 
+// remove everything, no confirm, at your own risks
 function clearDir () {
   rm('-rf', './.*')
   rm('-rf', './*')
 }
 
-// CLI commands
+// checks is a file exist
+function checkFileExistsSync (filepath) {
+  let flag = true
+  try {
+    fs.accessSync(filepath, fs.F_OK)
+  } catch (e) {
+    flag = false
+  }
+  return flag
+}
 
 function initConfirm (v, cb) {
   var self = v
@@ -64,27 +72,21 @@ function initConfirm (v, cb) {
   })
 }
 
-// cjecks is a file exist
-function checkFileExistsSync (filepath) {
-  let flag = true
-  try {
-    fs.accessSync(filepath, fs.F_OK)
-  } catch (e) {
-    flag = false
-  }
-  return flag
-}
-
 function initProj () {
   getBase('./')
   cliInit()
 }
 
+function noRc (e) {
+  console.log('no .yesrc.cson found')
+}
+
+// CLI commands
 vorpal
-  .command('init', 'initialise a project')
+  .command('base', 'initialise a base project')
   .action(function (args, cb) {
     const self = this
-    if (fs.readdirSync(getPwd()).length > 0) {
+    if (fs.readdirSync(cliDir).length > 0) {
       initConfirm(self, cb)
     } else {
       initProj(self, cb)
@@ -106,6 +108,7 @@ vorpal
       if (result.erase) {
         self.log('erasing')
         clearDir()
+        cb()
       } else {
         cb()
       }
@@ -116,14 +119,14 @@ vorpal
   .command('man', 'make manifest')
   .action(function (args, cb) {
     const self = this
-    var manP = path.join(getPwd(), 'imsConfigs.json')
+    var manP = path.join(cliDir, 'imsConfigs.json')
     if (checkFileExistsSync(manP) !== true) {
       self.log('missing imsConfigs.json, create one and rerun ')
       return cb()
     }
     self.log('found imsConfigs.json')
     var imsConfs = fs.readJsonSync(manP)
-    var imsPath = path.join(getPwd(), imsConfs.path)
+    var imsPath = path.join(cliDir, imsConfs.path)
 
     fs.ensureDirSync(imsPath)
 
@@ -160,7 +163,7 @@ vorpal
   })
 
 vorpal
-  .command('rd', 'test radio ')
+  .command('i', 'test for a full init')
   .action(function (args, cb) {
     const self = this
     console.dir(args)
@@ -176,3 +179,40 @@ vorpal
     })
   })
 
+vorpal
+  .command('rc', 'play with the idea of a config file')
+  .action(function (args, cb) {
+    const rcPath = path.join(cliDir, '/yesrc.cson')
+    const self = this
+    // chech if a yesrc.cson file exist
+    try {
+      fs.statSync(rcPath)
+    } catch (e) {
+      // no yesrc
+      noRc(e)
+      this.prompt({
+        type: 'confirm',
+        name: 'createRc',
+        default: true,
+        message: 'no .yesrc.cson file found, create one ?'
+      }, function (result) {
+        // create one
+        if (result.createRc) {
+          self.log('create yesrc.cson')
+          fs.copy(path.join(__dirname, './templates/yesrc.cson'), rcPath, function (err) {
+            if (err) return console.error(err)
+            console.log('created yesrc.cson')
+            cb()
+          })
+        } else {
+          // back to menu
+          cb()
+        }
+      })
+      cb()
+    }
+    // yesrc exists
+    const conf = cson.load(rcPath)
+    console.dir(conf)
+    cb()
+  })
