@@ -1,0 +1,24 @@
+# yes project config file
+# it uses cson so take care to the indentation
+# TODO write docs
+
+# basepath to the folder where all courses are
+coursePath: 'src'
+# path where the builds are copied, used by makeImsManifest
+buildsPath: 'builds'
+
+courses:[
+    {
+      name: 'course-00' #should match the one one in the coursePath folder
+      scId: 'Module 0. test module' # scorm info
+      scTxt: ''
+      scManifest: 'TEST_M00_manifest'
+      scScormUid: 'TEST_M00_scorm'
+    },{
+      name:'course-01'
+      scId: 'Module 1. test module'
+      scTxt: ''
+      scManifest: 'TEST_M01_manifest'
+      scScormUid: 'TEST_M01_scorm'
+    }
+]

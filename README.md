@@ -26,3 +26,5 @@ to invoke
 - add sftp uploads (rsync ?)
 - make/read config file in folder
 - make zip for scorm 
+- define and use yesrc.cson
+
