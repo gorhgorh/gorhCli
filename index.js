@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 /*global pwd exec rm*/
-// const path = require('path')
-// const pathos = '/gorhgorh/baseNodeRepo/archive/master.zip'
 'use strict'
 require('shelljs/global')
 const fs = require('fs-extra')
@@ -9,34 +7,21 @@ const path = require('path')
 const makeMan = require('./tools/manifestMod')
 const cson = require('cson')
 
-var vorpal = require('vorpal')()
+const chalk = require('chalk')
+const red = chalk.red
+const blue = chalk.cyan
+const green = chalk.green
+const mag = chalk.magenta
+
+const vorpal = require('vorpal')()
+
+// caches the path of the dir where the cli have been inited
+const cliDir = pwd().stdout
+const rcPath = path.join(cliDir, '/yesrc.cson')
 
 vorpal
   .delimiter('gorhCLI $')
   .show()
-// caches the path of the dir where the cli have been inited
-var cliDir = pwd().stdout
-
-// get the base repo files via snv to avoid .git data
-// TODO : put url in a config file
-function getBase (dest) {
-  if (!dest) dest = './.tmp'
-  exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ' + dest + ' --force ', { silent: true }, () => {
-  })
-}
-
-// git and Npm init commands
-// TODO : add a remote entry in the config file and set it here
-function cliInit () {
-  console.log('initialising the git repo')
-  exec('git init')
-  console.log('creating default package.json')
-  exec('npm init --yes')
-  exec('npm install -D standard') // optional ?
-  var pkg = fs.readJsonSync('./package.json')
-  pkg.scripts.test = 'standard'
-  fs.writeJsonSync('./package.json', pkg)
-}
 
 // remove everything, no confirm, at your own risks
 function clearDir () {
@@ -65,31 +50,94 @@ function initConfirm (v, cb) {
   }, function (result) {
     if (result.continue) {
       // skip the prompts if a width was supplied
-      initProj(cb, self)
-    } else {
-      cb()
+      pInit(self, cb)
+      //cb()
     }
   })
 }
 
-function initProj () {
-  getBase('./')
-  cliInit()
+function pInit (self, cb) {
+  const gitP = path.join(cliDir, '/.git')
+  const npmP = path.join(cliDir, '/package.json')
+  const editP = path.join(cliDir, '/.editorconfig')
+
+  if (checkFileExistsSync(editP)) {
+    self.log(blue('you seem to have opinions already'))
+  } else {
+    self.log(mag('copying base files'))
+    exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, () => {
+      self.log(green('base files cloned'))
+    })
+  }
+
+  if (checkFileExistsSync(gitP)) {
+    self.log(blue('already a git repo'))
+  } else {
+    self.log(mag('initialising the git repo'))
+    exec('git init', { silent: true })
+  }
+  if (checkFileExistsSync(npmP)) {
+    self.log(blue('package.json found'))
+  } else {
+    self.log(mag('creating default package.json'))
+    exec('npm init --yes', { silent: true })
+
+    self.log(mag('installing standard js'))
+    exec('npm install -D standard', { silent: true }) // optional ?
+    self.log(mag('editing package.json'))
+    const pkg = fs.readJsonSync('./package.json')
+    pkg.scripts.test = 'standard'
+    fs.writeJsonSync('./package.json', pkg)
+    self.log(green('done npm init'))
+  }
+  if (checkFileExistsSync(rcPath)) {
+    self.log(green('base script ran, you should run rc and configure your project now'))
+  }
+
+  if (cb) cb()
 }
 
-function noRc (e) {
-  console.log('no .yesrc.cson found')
+function createRc (self, cb) {
+  self.prompt({
+    type: 'confirm',
+    name: 'createRc',
+    default: true,
+    message: 'no yesrc.cson file found, create one ?'
+  }, function (result) {
+    // create one
+    if (result.createRc) {
+      self.log(mag('create yesrc.cson'))
+      fs.copySync(path.join(__dirname, './templates/yesrc.cson'), rcPath)
+      self.log(green('created yesrc.cson'))
+    }
+    cb()
+  })
 }
+
+function checkRc (s, cb) {
+  const self = s
+  const isRc = checkFileExistsSync(rcPath)
+  if (isRc !== true) {
+    createRc(self, cb)
+  } else {
+    self.log(blue('found yesrc.cson'))
+    const conf = cson.load(rcPath)
+    self.dir(conf)
+    return true
+  }
+}
+
 
 // CLI commands
 vorpal
   .command('base', 'initialise a base project')
+  .alias('b')
   .action(function (args, cb) {
     const self = this
     if (fs.readdirSync(cliDir).length > 0) {
       initConfirm(self, cb)
     } else {
-      initProj(self, cb)
+      pInit(self, cb)
     }
   })
 
@@ -106,8 +154,9 @@ vorpal
       message: msg
     }, function (result) {
       if (result.erase) {
-        self.log('erasing')
+        self.log(mag('erasing'))
         clearDir()
+        self.log(green('cleared'))
         cb()
       } else {
         cb()
@@ -117,91 +166,55 @@ vorpal
 
 vorpal
   .command('man', 'make manifest')
+  .alias('m')
   .action(function (args, cb) {
     const self = this
-    var manP = path.join(cliDir, 'imsConfigs.json')
-    if (checkFileExistsSync(manP) !== true) {
-      self.log('missing imsConfigs.json, create one and rerun ')
-      return cb()
+    const isRc = checkFileExistsSync(rcPath)
+    if (isRc !== true) {
+      self.log(red('you need a yesrc.cson file'))
+      cb()
+    } else {
+      const conf = cson.load(rcPath)
+      var imsPath = path.join(cliDir, conf.buildsPath)
+
+      this.prompt({
+        type: 'confirm',
+        name: 'makeMan',
+        default: true,
+        message: 'write manifests ?'
+      }, function (result) {
+        if (result.makeMan) {
+          self.log(mag('writting manifests'))
+          fs.ensureDirSync(imsPath)
+          makeMan(conf, imsPath, self)
+          cb()
+        } else {
+          cb()
+        }
+      })
     }
-    self.log('found imsConfigs.json')
-    var imsConfs = fs.readJsonSync(manP)
-    var imsPath = path.join(cliDir, imsConfs.path)
-
-    fs.ensureDirSync(imsPath)
-
-    this.prompt({
-      type: 'confirm',
-      name: 'makeMan',
-      default: false,
-      message: 'write manifests ?'
-    }, function (result) {
-      if (result.makeMan) {
-        self.log('writting manifests')
-        makeMan(imsConfs, imsPath)
-      } else {
-        cb()
-      }
-    })
   })
 
 vorpal
-  .command('ls', 'test list ')
+  .command('rc', 'create the config file')
   .action(function (args, cb) {
-    const self = this
-    console.dir(args)
-    self.log('yo')
-    self.prompt({
-      type: 'list',
-      name: 'test',
-      message: 'list of things',
-      choices: ['1', 'deux', 'tres', 'quattro']
-    }, function (result) {
-      console.log(result)
-      cb()
-    })
-  })
-
-vorpal
-  .command('i', 'test for a full init')
-  .action(function (args, cb) {
-    const self = this
-    console.dir(args)
-    self.log('yo')
-    self.prompt({
-      type: 'checkbox',
-      name: 'radio',
-      message: 'list of things',
-      choices: ['1', 'deux', 'tres', 'quattro']
-    }, function (result) {
-      console.log(result)
-      cb()
-    })
-  })
-
-vorpal
-  .command('rc', 'play with the idea of a config file')
-  .action(function (args, cb) {
-    const rcPath = path.join(cliDir, '/yesrc.cson')
     const self = this
     // chech if a yesrc.cson file exist
-    try {
-      fs.statSync(rcPath)
-    } catch (e) {
-      // no yesrc
-      noRc(e)
+
+    const isRc = checkFileExistsSync(rcPath)
+    if (isRc !== true) {
       this.prompt({
         type: 'confirm',
         name: 'createRc',
         default: true,
-        message: 'no .yesrc.cson file found, create one ?'
+        message: 'no yesrc.cson file found, create one ?'
       }, function (result) {
         // create one
         if (result.createRc) {
-          self.log('create yesrc.cson')
+          self.log(mag('create yesrc.cson'))
           fs.copy(path.join(__dirname, './templates/yesrc.cson'), rcPath, function (err) {
             if (err) return console.error(err)
-            console.log('created yesrc.cson')
+            console.log(green('created yesrc.cson'))
             cb()
           })
         } else {
@@ -209,10 +222,64 @@ vorpal
           cb()
         }
       })
+    } else {
+      // yesrc exists
+      const conf = cson.load(rcPath)
+      console.dir(conf)
       cb()
     }
-    // yesrc exists
-    const conf = cson.load(rcPath)
-    console.dir(conf)
-    cb()
   })
+
+// tests
+
+vorpal
+  .command('tt', 'test command, use at your own risks (may erase hdd)')
+  .action(function (args, cb) {
+    const self = this
+    if (checkRc(self, cb) === true) {
+      self.log(green('yooooo'))
+      cb()
+    }
+  })
+  .hidden()
+
+vorpal
+  .command('t', 'test command, use at your own risks (may erase hdd)')
+  .action(function (args, cb) {
+    const self = this
+    pInit(self, cb)
+  })
+  .hidden()
+
+vorpal
+  .command('ls', 'test list ')
+  .action(function (args, cb) {
+    const self = this
+
+    self.prompt({
+      type: 'list',
+      name: 'test',
+      message: 'list of things',
+      choices: ['1', 'deux', 'tres', 'quattro']
+    }, function (result) {
+      self.log(result)
+      cb()
+    })
+  })
+  .hidden()
+
+vorpal
+  .command('i', 'test for a full init')
+  .action(function (args, cb) {
+    const self = this
+    self.prompt({
+      type: 'checkbox',
+      name: 'radio',
+      message: 'list of things',
+      choices: ['1', 'deux', 'tres', 'quattro']
+    }, function (result) {
+      self.log(result)
+      cb()
+    })
+  })
+  .hidden()

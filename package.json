@@ -1,6 +1,6 @@
 {
   "name": "gorhcli",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/gorhgorh/gorhCli#readme",
   "dependencies": {
     "archiver": "^1.0.1",
+    "chalk": "^1.1.3",
     "cson": "^3.0.2",
     "fs-extra": "^0.30.0",
     "lodash": "^4.14.2",

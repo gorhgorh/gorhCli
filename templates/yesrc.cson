@@ -9,8 +9,8 @@ buildsPath: 'builds'
 
 courses:[
     {
-      name: 'course-00'
-      scId: 'Module 0. test module'
+      name: 'course-00' #should match the one one in the coursePath folder
+      scId: 'Module 0. test module' # scorm info
       scTxt: ''
       scManifest: 'TEST_M00_manifest'
       scScormUid: 'TEST_M00_scorm'

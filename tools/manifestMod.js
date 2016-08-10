@@ -1,31 +1,35 @@
 /* jshint -W079 */
-var fs = require('fs')
-var path = require('path')
-var _ = require('lodash')
-var cmpTmpl = require('./treatManifest')
+const fs = require('fs')
+const path = require('path')
+const _ = require('lodash')
+const cmpTmpl = require('./treatManifest')
 
-function doIt (config, dest) {
-  _(config.courses).forEach(function (data, key) {
-    makeBuild(data, key, dest)
+const chalk = require('chalk')
+const green = chalk.green
+
+// iterate through the yesrc.cson's courses objects
+function makeMans (conf, dest, self) {
+  _(conf.courses).forEach(function (data) {
+    makeManifest(data, data.name, dest, self)
   })
 }
 
-function makeBuild (data, key, dest) {
-  console.log('makebuild RAN')
+// writes imsmanifest file from a template with yesrc's informations
+function makeManifest (data, key, dest, s) {
   var dirPath = path.join(dest, key)
   function writeFile () {
     fs.writeFile(dirPath + '/imsmanifest.xml', cmpTmpl(data), function (err) {
       if (err) { throw (err) }
-      console.log('done writing', dirPath)
+      s.log(green('done writing'), dirPath)
     })
   }
   if (!fs.existsSync(dirPath)) {
     fs.mkdir(dirPath, function (err) {
       if (err) { return console.error(err) }
-      console.log('Directory', dirPath, 'created successfully!')
+      s.log(green('Directory', dirPath), 'created successfully!')
       writeFile()
     })
   } else { writeFile() }
 }
 
-module.exports = doIt
+module.exports = makeMans
