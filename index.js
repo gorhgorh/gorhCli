@@ -17,10 +17,14 @@ const vorpal = require('vorpal')()
 
 const utils = require('./utils')
 const checkFileExistsSync = utils.checkFileExistsSync
+const clearDir = utils.clearDir
 
 const sh = require('./shellCmds')
 const exec = sh.exec
 const gCliDir = sh.getCliPath // return current cliPath
+
+const builder = require('./cmds/build')
+const buildAction = builder.buildAction
 
 // caches the path of the dir where the cli have been inited
 const cliDir = gCliDir()
@@ -32,18 +36,6 @@ let confIsLoaded = false
 vorpal
   .delimiter('gorhCLI $')
   .show()
-
-/**
- *
- * remove everything, no confirm, at your own risks
- *
- * @param {string} dir path to erase
- * @returns {bool} true if sucessfull
- */
-function clearDir (dir) {
-  fs.emptyDirSync(dir)
-  return true
-}
 
 /**
  * prompt for confirmation if for the 'base' command
@@ -107,7 +99,7 @@ function pInit (self, cb) {
     fs.writeJsonSync('./package.json', pkg)
     self.log(green('done npm init'))
   }
-  if (checkFileExistsSync(rcPath)) {
+  if (!checkFileExistsSync(rcPath)) {
     self.log(green('base script ran, you should run rc and configure your project now'))
   }
 
@@ -115,7 +107,7 @@ function pInit (self, cb) {
 }
 
 /**
- *
+ * create a configuration file with basic defaults
  *
  * @param {object} self commandInstance, vorpal object
  * @param {function} cb vorpal's cb
@@ -194,8 +186,8 @@ function loadRc (self, cb) {
 
 // CLI commands
 vorpal
-  .command('base', 'initialise a base project')
-  .alias('b')
+  .command('init', 'initialise a base project')
+  .alias('i')
   .action(function (args, cb) {
     const self = this
     // if there are files in the dir confirm action
@@ -207,10 +199,10 @@ vorpal
   })
 
 vorpal
-  .command('clearDir', 'clean current dir')
+  .command('clear', 'clean current dir')
   .alias('c')
   .action(function (args, cb) {
-    debug('clearDir called')
+    debug('clear called')
     const self = this
     var msg = 'this will clean current dir ' + cliDir
 
@@ -232,8 +224,9 @@ vorpal
   })
 
 vorpal
-  .command('man', 'make manifest')
+  .command('manifest', 'make manifest')
   .alias('m')
+  .alias('man')
   .action(function (args, cb) {
     const self = this
     const isRc = checkFileExistsSync(rcPath)
@@ -298,6 +291,48 @@ vorpal
   })
 
 // tests
+vorpal
+  .command('pbuild [courses...]', 'proto build courses')
+  .alias('pb')
+  .action(function (args, cb) {
+    const self = this
+    if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '));
+    debug('args', args)
+    if (checkRc() === true) {
+      self.log(green('yooooo'))
+      cb()
+    }
+  })
+  // .hidden()
+
+vorpal
+  .command('build [courses...]', 'build courses')
+  .alias('b')
+  .action(buildAction)
+
+
+// vorpal
+//   .command('build [courses...]', 'build courses')
+//   .alias('b')
+//   .action(function (args, cb) {
+//     const self = this
+//     if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '));
+//     debug('args', args)
+//     if (checkRc() === true) {
+//       self.log(green('yooooo'))
+//       cb()
+//     }
+//   })
+  // .hidden()
+
+vorpal
+  .command('say [words...]')
+  .action(function (args, cb) {
+    this.log(args)
+    this.log(args.words.join(' '));
+    cb();
+  });
+
 vorpal
   .command('t', 'test command, loadRc, list dir, prompt dir')
   .action(function (args, cb) {

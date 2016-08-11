@@ -18,4 +18,19 @@ function checkFileExistsSync (filepath) {
   return flag
 }
 
-module.exports = {checkFileExistsSync}
+/**
+ *
+ * remove everything, no confirm, at your own risks
+ *
+ * @param {string} dir path to erase
+ * @returns {bool} true if sucessfull
+ */
+function clearDir (dir) {
+  fs.emptyDirSync(dir)
+  return true
+}
+
+module.exports = {
+  checkFileExistsSync,
+  clearDir
+}

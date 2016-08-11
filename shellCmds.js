@@ -11,8 +11,13 @@ function cleanDir (dir) {
   debug('cleanDir called')
 }
 
+function checkShellCmd (cmd, args) {
+
+}
+
 module.exports = {
   getCliPath,
+  checkShellCmd,
   cleanDir,
   exec: sh.exec
 }
