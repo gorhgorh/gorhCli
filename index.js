@@ -18,6 +18,8 @@ const vorpal = require('vorpal')()
 // caches the path of the dir where the cli have been inited
 const cliDir = pwd().stdout
 const rcPath = path.join(cliDir, '/yesrc.cson')
+let conf
+let confIsLoaded = false
 
 vorpal
   .delimiter('gorhCLI $')
@@ -62,10 +64,10 @@ function pInit (self, cb) {
   const editP = path.join(cliDir, '/.editorconfig')
 
   if (checkFileExistsSync(editP)) {
-    self.log(blue('you seem to have opinions already'))
+    self.log(blue('.editorconfig found you seem to have opinions already'))
   } else {
     self.log(mag('copying base files'))
-    exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, () => {
+    exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, function () {
       self.log(green('base files cloned'))
     })
   }
@@ -114,19 +116,32 @@ function createRc (self, cb) {
   })
 }
 
-function checkRc (s, cb) {
-  const self = s
+function checkRc (self, cb) {
   const isRc = checkFileExistsSync(rcPath)
   if (isRc !== true) {
     createRc(self, cb)
   } else {
     self.log(blue('found yesrc.cson'))
-    const conf = cson.load(rcPath)
-    self.dir(conf)
     return true
   }
 }
 
+function loadRc (self, cb) {
+  // return if conf is loaded
+  if (confIsLoaded === true) return true
+
+  const isRc = checkFileExistsSync(rcPath)
+  if (isRc !== true) {
+    self.log(blue('no yesrc.cson found'))
+    createRc(self, cb)
+    cb()
+  } else {
+    conf = cson.load(rcPath)
+    confIsLoaded = true
+    self.log(green('conf loaded'))
+    return true
+  }
+}
 
 // CLI commands
 vorpal
@@ -134,6 +149,7 @@ vorpal
   .alias('b')
   .action(function (args, cb) {
     const self = this
+    // if there are files in the dir confirm action
     if (fs.readdirSync(cliDir).length > 0) {
       initConfirm(self, cb)
     } else {
@@ -144,8 +160,8 @@ vorpal
 vorpal
   .command('cl', 'clean current dir')
   .action(function (args, cb) {
-    var msg = 'this will clean current dir ' + pwd().stdout
     const self = this
+    var msg = 'this will clean current dir ' + pwd().stdout
 
     this.prompt({
       type: 'confirm',
@@ -231,6 +247,24 @@ vorpal
   })
 
 // tests
+vorpal
+  .command('t', 'test command, loadRc')
+  .action(function (args, cb) {
+    const self = this
+    var rcLoaded = loadRc(self, cb)
+    if (rcLoaded !== true) {
+      self.log(red('error conf is not loaded'))
+      self.log(conf)
+      cb()
+    }
+    const dirsList = []
+    conf.courses.forEach(function (o, i) {
+      dirsList.push(o.name)
+    })
+    console.log(dirsList)
+    cb()
+  })
+  .hidden()
 
 vorpal
   .command('tt', 'test command, use at your own risks (may erase hdd)')
@@ -244,7 +278,7 @@ vorpal
   .hidden()
 
 vorpal
-  .command('t', 'test command, use at your own risks (may erase hdd)')
+  .command('ttt', 'test command, use at your own risks (may erase hdd)')
   .action(function (args, cb) {
     const self = this
     pInit(self, cb)
