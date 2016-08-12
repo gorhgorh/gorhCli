@@ -25,7 +25,6 @@ function getHeadRow (entry) {
   return headRow
 }
 
-
 // extraction process !!
 function extract () {
   let headRow = getHeadRow(sheetData[0])

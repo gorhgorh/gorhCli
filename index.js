@@ -15,9 +15,13 @@ const mag = chalk.magenta
 
 const vorpal = require('vorpal')()
 
+const sh = require('./shellCmds')
+const gCliDir = sh.getCliPath // return current cliPath
+
 // caches the path of the dir where the cli have been inited
-const cliDir = pwd().stdout
+const cliDir = gCliDir()
 const rcPath = path.join(cliDir, '/yesrc.cson')
+
 let conf
 let confIsLoaded = false
 
@@ -53,7 +57,7 @@ function initConfirm (v, cb) {
     if (result.continue) {
       // skip the prompts if a width was supplied
       pInit(self, cb)
-      //cb()
+      // cb()
     }
   })
 }
@@ -248,10 +252,10 @@ vorpal
 
 // tests
 vorpal
-  .command('t', 'test command, loadRc')
+  .command('t', 'test command, loadRc, list dir, prompt dir')
   .action(function (args, cb) {
     const self = this
-    var rcLoaded = loadRc(self, cb)
+    let rcLoaded = loadRc(self, cb)
     if (rcLoaded !== true) {
       self.log(red('error conf is not loaded'))
       self.log(conf)
@@ -262,9 +266,21 @@ vorpal
       dirsList.push(o.name)
     })
     console.log(dirsList)
-    cb()
+    self.prompt({
+      type: 'checkbox',
+      name: 'courseList',
+      message: 'list of things',
+      choices: dirsList
+    }, function (result) {
+      if (result.courseList.length < 1) {
+        self.log(red('one, choice, you need to make (at least) ONE choice'))
+        return cb()
+      }
+      self.log(result, result.length, typeof (result), Array.isArray(result))
+      cb()
+    })
   })
-  .hidden()
+  // .hidden()
 
 vorpal
   .command('tt', 'test command, use at your own risks (may erase hdd)')
