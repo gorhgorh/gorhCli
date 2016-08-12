@@ -3,8 +3,15 @@ var test = require('tape')
 var sh = require('../shellCmds')
 
 var cliPath = sh.getCliPath()
-console.log(cliPath, __dirname.slice(0, -5))
 // var commonTests = require('./commonTests')
+
+
+// create a test directory for testing the cleanDirFunc
+function createTestDirs () {
+  console.log(__dirname)
+}
+
+createTestDirs()
 
 test('getCliPath ', function (t) {
   // it should return a string containg a path

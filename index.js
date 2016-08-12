@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/*global pwd exec rm*/
 'use strict'
-require('shelljs/global')
+/* global */
+const debug = require('debug')('CLI')
 const fs = require('fs-extra')
 const path = require('path')
 const makeMan = require('./tools/manifestMod')
@@ -15,7 +15,11 @@ const mag = chalk.magenta
 
 const vorpal = require('vorpal')()
 
+const utils = require('./utils')
+const checkFileExistsSync = utils.checkFileExistsSync
+
 const sh = require('./shellCmds')
+const exec = sh.exec
 const gCliDir = sh.getCliPath // return current cliPath
 
 // caches the path of the dir where the cli have been inited
@@ -30,20 +34,8 @@ vorpal
   .show()
 
 // remove everything, no confirm, at your own risks
-function clearDir () {
-  rm('-rf', './.*')
-  rm('-rf', './*')
-}
-
-// checks is a file exist
-function checkFileExistsSync (filepath) {
-  let flag = true
-  try {
-    fs.accessSync(filepath, fs.F_OK)
-  } catch (e) {
-    flag = false
-  }
-  return flag
+function clearDir (dir) {
+  fs.emptyDirSync(dir)
 }
 
 function initConfirm (v, cb) {
@@ -162,10 +154,12 @@ vorpal
   })
 
 vorpal
-  .command('cl', 'clean current dir')
+  .command('clearDir', 'clean current dir')
+  .alias('c')
   .action(function (args, cb) {
+    debug('clearDir called')
     const self = this
-    var msg = 'this will clean current dir ' + pwd().stdout
+    var msg = 'this will clean current dir ' + cliDir
 
     this.prompt({
       type: 'confirm',
@@ -175,7 +169,7 @@ vorpal
     }, function (result) {
       if (result.erase) {
         self.log(mag('erasing'))
-        clearDir()
+        clearDir(cliDir)
         self.log(green('cleared'))
         cb()
       } else {
@@ -258,27 +252,27 @@ vorpal
     let rcLoaded = loadRc(self, cb)
     if (rcLoaded !== true) {
       self.log(red('error conf is not loaded'))
-      self.log(conf)
       cb()
+    } else {
+      const dirsList = []
+      conf.courses.forEach(function (o, i) {
+        dirsList.push(o.name)
+      })
+      console.log(dirsList)
+      self.prompt({
+        type: 'checkbox',
+        name: 'courseList',
+        message: 'list of things',
+        choices: dirsList
+      }, function (result) {
+        if (result.courseList.length < 1) {
+          self.log(red('one, choice, you need to make (at least) ONE choice'))
+          return cb()
+        }
+        self.log(result.courseList)
+        cb()
+      })
     }
-    const dirsList = []
-    conf.courses.forEach(function (o, i) {
-      dirsList.push(o.name)
-    })
-    console.log(dirsList)
-    self.prompt({
-      type: 'checkbox',
-      name: 'courseList',
-      message: 'list of things',
-      choices: dirsList
-    }, function (result) {
-      if (result.courseList.length < 1) {
-        self.log(red('one, choice, you need to make (at least) ONE choice'))
-        return cb()
-      }
-      self.log(result, result.length, typeof (result), Array.isArray(result))
-      cb()
-    })
   })
   // .hidden()
 

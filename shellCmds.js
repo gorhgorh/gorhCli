@@ -13,5 +13,6 @@ function cleanDir (dir) {
 
 module.exports = {
   getCliPath,
-  cleanDir
+  cleanDir,
+  exec: sh.exec
 }
