@@ -1,7 +1,13 @@
 /* little utilies used everywhere */
 'use strict'
-// checks is a file exist
 const fs = require('fs')
+
+/**
+ * checks is a file exist
+ *
+ * @param {string} filepath path to the file to check
+ * @returns {bool} true if the file exists, else false
+ */
 function checkFileExistsSync (filepath) {
   let flag = true
   try {

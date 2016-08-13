@@ -33,13 +33,25 @@ vorpal
   .delimiter('gorhCLI $')
   .show()
 
-// remove everything, no confirm, at your own risks
+/**
+ *
+ * remove everything, no confirm, at your own risks
+ *
+ * @param {string} dir path to erase
+ * @returns {bool} true if sucessfull
+ */
 function clearDir (dir) {
   fs.emptyDirSync(dir)
+  return true
 }
 
-function initConfirm (v, cb) {
-  var self = v
+/**
+ * prompt for confirmation if for the 'base' command
+ *
+ * @param {object} self commandInstance, vorpal object
+ * @param {function} cb vorpal's cb
+ */
+function initConfirm (self, cb) {
   self.prompt({
     type: 'confirm',
     name: 'continue',
@@ -49,10 +61,17 @@ function initConfirm (v, cb) {
     if (result.continue) {
       // skip the prompts if a width was supplied
       pInit(self, cb)
-      // cb()
+    // cb()
     }
   })
 }
+
+/**
+ * initialise the repo with git package.json and some defaults
+ *
+ * @param {object} self commandInstance, vorpal object
+ * @param {function} cb vorpal's cb
+ */
 
 function pInit (self, cb) {
   const gitP = path.join(cliDir, '/.git')
@@ -95,6 +114,12 @@ function pInit (self, cb) {
   if (cb) cb()
 }
 
+/**
+ *
+ *
+ * @param {object} self commandInstance, vorpal object
+ * @param {function} cb vorpal's cb
+ */
 function createRc (self, cb) {
   self.prompt({
     type: 'confirm',
@@ -112,15 +137,43 @@ function createRc (self, cb) {
   })
 }
 
-function checkRc (self, cb) {
-  const isRc = checkFileExistsSync(rcPath)
+/**
+ * check if there is already a config file at the path of the cli
+ *
+ * TODO : check current path against cli path, and look up from there to cli path
+ * and change dir if needed
+ *
+ * @returns {bool} true if there is a rc file
+ */
+function checkRc (pth) {
+  if (!pth) pth = rcPath
+  const isRc = checkFileExistsSync(pth)
   if (isRc !== true) {
-    createRc(self, cb)
+    debug(red('no rc', pth))
+    return false
   } else {
-    self.log(blue('found yesrc.cson'))
     return true
   }
 }
+
+/**
+ *
+ *
+ * @param {any} self
+ * @param {any} prompOpt
+ * @param {any} action
+ * @param {any} cb
+ */
+// function getInputCourseList (self, prompOpt, action, cb) {
+// }
+
+/**
+ * loads the config file
+ *
+ * @param {any} self
+ * @param {any} cb
+ * @returns
+ */
 
 function loadRc (self, cb) {
   // return if conf is loaded
@@ -280,7 +333,7 @@ vorpal
   .command('tt', 'test command, use at your own risks (may erase hdd)')
   .action(function (args, cb) {
     const self = this
-    if (checkRc(self, cb) === true) {
+    if (checkRc() === true) {
       self.log(green('yooooo'))
       cb()
     }

@@ -5,7 +5,6 @@ var sh = require('../shellCmds')
 var cliPath = sh.getCliPath()
 // var commonTests = require('./commonTests')
 
-
 // create a test directory for testing the cleanDirFunc
 function createTestDirs () {
   console.log(__dirname)
