@@ -28,7 +28,9 @@
     "debug": "^2.2.0",
     "fs-extra": "^0.30.0",
     "lodash": "^4.14.2",
+    "rc": "^1.1.6",
     "shelljs": "^0.7.3",
+    "strip-json-comments": "^2.0.1",
     "vorpal": "^1.11.4"
   },
   "devDependencies": {

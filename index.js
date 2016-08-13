@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const makeMan = require('./tools/manifestMod')
 const cson = require('cson')
+const _ = require('lodash')
 
 const chalk = require('chalk')
 const red = chalk.red
@@ -27,8 +28,13 @@ const builder = require('./cmds/build')
 const buildAction = builder.buildAction
 
 // caches the path of the dir where the cli have been inited
+const rcFile = '.gorhClirc'
 const cliDir = gCliDir()
-const rcPath = path.join(cliDir, '/yesrc.cson')
+const rcPath = path.join(cliDir, '/', rcFile)
+
+const confMan = require('./confMan')
+const getConf = confMan.getConf
+
 
 let conf
 let confIsLoaded = false
@@ -111,21 +117,24 @@ function pInit (self, cb) {
  *
  * @param {object} self commandInstance, vorpal object
  * @param {function} cb vorpal's cb
+ * @param {string} file name of the rc file default to cson
  */
-function createRc (self, cb) {
+function createRc (self, cb, file) {
+  if (!file) file = rcFile
   self.prompt({
     type: 'confirm',
     name: 'createRc',
     default: true,
-    message: 'no yesrc.cson file found, create one ?'
+    message: 'no ' + rcFile + ' file found, create one ?'
   }, function (result) {
     // create one
     if (result.createRc) {
       self.log(mag('create yesrc.cson'))
-      fs.copySync(path.join(__dirname, './templates/yesrc.cson'), rcPath)
+      fs.copySync(path.join(__dirname, './templates/' + file), rcPath)
       self.log(green('created yesrc.cson'))
     }
-    cb()
+    if (cb) cb()
+    else return true
   })
 }
 
@@ -167,20 +176,44 @@ function checkRc (pth) {
  * @returns
  */
 
-function loadRc (self, cb) {
+// function loadRc (self, cb) {
+//   // return if conf is loaded
+//   if (confIsLoaded === true) return true
+
+//   const isRc = checkFileExistsSync(rcPath)
+//   if (isRc !== true) {
+//     self.log(blue('no yesrc.cson found'))
+//     createRc(self, cb)
+//     cb()
+//   } else {
+//     conf = cson.load(rcPath)
+//     confIsLoaded = true
+//     self.log(green('conf loaded'))
+//     return true
+//   }
+// }
+
+function loadConf (self, cb) {
   // return if conf is loaded
   if (confIsLoaded === true) return true
+  conf = getConf()
+
+  if (_.has(conf, 'courses') !== true) {
+    self.log(red('error conf is not loaded'))
+    cb()
+  }
 
   const isRc = checkFileExistsSync(rcPath)
+
   if (isRc !== true) {
-    self.log(blue('no yesrc.cson found'))
-    createRc(self, cb)
-    cb()
-  } else {
-    conf = cson.load(rcPath)
-    confIsLoaded = true
-    self.log(green('conf loaded'))
-    return true
+    self.log(blue('no', rcFile, 'found create one ?'))
+    if (createRc(self) === true) {
+      confIsLoaded = true
+      self.log(green('conf loaded'))
+      if (cb) cb()
+      else return true
+    }
+    // cb()
   }
 }
 
@@ -267,14 +300,14 @@ vorpal
         type: 'confirm',
         name: 'createRc',
         default: true,
-        message: 'no yesrc.cson file found, create one ?'
+        message: 'no ' + rcFile + ' file found, create one ?'
       }, function (result) {
         // create one
         if (result.createRc) {
-          self.log(mag('create yesrc.cson'))
-          fs.copy(path.join(__dirname, './templates/yesrc.cson'), rcPath, function (err) {
+          self.log(mag('create', rcFile))
+          fs.copy(path.join(__dirname, './templates/', rcFile), rcPath, function (err) {
             if (err) return console.error(err)
-            console.log(green('created yesrc.cson'))
+            console.log(green('created', rcFile))
             cb()
           })
         } else {
@@ -310,6 +343,18 @@ vorpal
   .alias('b')
   .action(buildAction)
 
+vorpal
+  .command('getConf', 'get the config with rc')
+  .alias('g')
+  .action(function (args, cb) {
+    const self = this
+    const rcLoaded = loadConf(self, cb)
+    if (rcLoaded === true) {
+      debug('yoo')
+    }
+    // cb()
+  })
+  // .hidden()
 
 // vorpal
 //   .command('build [courses...]', 'build courses')
@@ -329,16 +374,17 @@ vorpal
   .command('say [words...]')
   .action(function (args, cb) {
     this.log(args)
-    this.log(args.words.join(' '));
-    cb();
-  });
+    this.log(args.words.join(' '))
+    cb()
+  })
 
 vorpal
   .command('t', 'test command, loadRc, list dir, prompt dir')
   .action(function (args, cb) {
     const self = this
-    let rcLoaded = loadRc(self, cb)
-    if (rcLoaded !== true) {
+    conf = getConf()
+    debug(conf.courses)
+    if (_.has(conf, 'courses') !== true) {
       self.log(red('error conf is not loaded'))
       cb()
     } else {
@@ -366,6 +412,7 @@ vorpal
 
 vorpal
   .command('tt', 'test command, use at your own risks (may erase hdd)')
+  .alias('tttt')
   .action(function (args, cb) {
     const self = this
     if (checkRc() === true) {
@@ -374,6 +421,7 @@ vorpal
     }
   })
   .hidden()
+
 
 vorpal
   .command('ttt', 'test command, use at your own risks (may erase hdd)')

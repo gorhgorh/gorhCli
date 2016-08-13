@@ -1,0 +1,21 @@
+{
+  "confVersion": 0,
+  "coursePath": "src",
+  "buildsPath": "builds",
+  "courses": [
+    {
+      "name" : "course-00",
+      "scId": "Module 0. test module",
+      "scTxt": "",
+      "scManifest": "TEST_M00_manifest",
+      "scScormUid": "TEST_M00_scorm"
+    },
+    {
+      "name" : "course-01",
+      "scId": "Module 1. test module",
+      "scTxt": "",
+      "scManifest": "TEST_M01_manifest",
+      "scScormUid": "TEST_M01_scorm"
+    }
+  ]
+}

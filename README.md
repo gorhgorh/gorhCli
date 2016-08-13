@@ -32,15 +32,24 @@ invocation
 - ```manifest``` crer les fichier imsManifest.xml (utilse les infos du yesrc)
 - ```clear``` effacer le contenu du répertoire
 
-### yesrc.cson
 
-le fichier yesrc.json est un fichier qui a pour but a terme de contenir toutes 
-les informations dont les outils de build on besoins. pour le moment sont implémentés :
-il est en CSON, pour les commentaires et la syntaxe épurée, a voir si on rends 
-ca compatible json aussi (yesrc.json, facile a faire)
+## Configuration
+### .gorhClirc
+
+le fichier .gorhClirc est un fichier qui a pour but a terme de contenir toutes les informations dont les outils de build on besoins. 
+Il est mainteant en Json, ou peux ete en init
+
+le fichier de configuration est utilisé pour les projet autour d'adapt, et assument une certaine hierarchie et un workflow.
+
+par defaut le cour de base s'appelle 'course-00', 'course' n'est pas a utiliser, il sera symlinké par le processus de build !!!
+
+la configuration est chargé en utilisant le module [rc](https://github.com/dominictarr/rc) ce qui permet d'avoir aussi une config globale dans la home.
+
+pour le moment sont implémentés :
 
 - coursePath : chemin vers le dossier src a partir de la racine du projet
 - buildsPath : chemin vers le dossier ou les builds sont réunis (pour les manifestes)
+- version: si non spécifié, la version courrante de la cli sera utilisée
 - courses : un array d'objets contenant les infos des divers cours pour les fichier multicours
   - name : nom du cours, DOIS etre le nom du répertoire correspondant dans /src
   - scTxt: scorm data (souvent vide chez yes)

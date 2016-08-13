@@ -16,9 +16,10 @@ debug(blue('buildjs, test 1'))
  *
  * @param {any} srcDir
  * @param {any} courseDir
+ * @param {any} conf
  * @param {any} symDir
  */
-function symCourse (srcDir, courseDir, symDir) {
+function symCourse (srcDir, courseDir, conf, symDir) {
   if (!symDir) symDir = 'course'
   const symP = path.join(srcDir, courseDir)
   const symL = path.join(srcDir, symDir)
@@ -33,7 +34,7 @@ function symCourse (srcDir, courseDir, symDir) {
  * @param {any} cb
  */
 function buildAction (args, cb) {
-  if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '));
+  if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '))
   debug('args', args)
   cb()
 }
