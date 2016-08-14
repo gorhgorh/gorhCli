@@ -34,9 +34,10 @@ const rcPath = path.join(cliDir, '/', rcFile)
 
 const confMan = require('./confMan')
 const getConf = confMan.getConf
+const compConf = confMan.compareConf
 
 
-let conf
+let conf = getConf
 let confIsLoaded = false
 
 vorpal
@@ -77,7 +78,7 @@ function pInit (self, cb) {
   const editP = path.join(cliDir, '/.editorconfig')
 
   if (checkFileExistsSync(editP)) {
-    self.log(blue('.editorconfig found you seem to have opinions already'))
+    self.log(blue('.editorconfig, found you seem to have opinions already'))
   } else {
     self.log(mag('copying base files'))
     exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, function () {
@@ -125,13 +126,13 @@ function createRc (self, cb, file) {
     type: 'confirm',
     name: 'createRc',
     default: true,
-    message: 'no ' + rcFile + ' file found, create one ?'
+    message: 'no ' + file + ' file found, create one ?'
   }, function (result) {
     // create one
     if (result.createRc) {
       self.log(mag('create yesrc.cson'))
       fs.copySync(path.join(__dirname, './templates/' + file), rcPath)
-      self.log(green('created yesrc.cson'))
+      self.log(green('created', file))
     }
     if (cb) cb()
     else return true
@@ -156,42 +157,6 @@ function checkRc (pth) {
     return true
   }
 }
-
-/**
- *
- *
- * @param {any} self
- * @param {any} prompOpt
- * @param {any} action
- * @param {any} cb
- */
-// function getInputCourseList (self, prompOpt, action, cb) {
-// }
-
-/**
- * loads the config file
- *
- * @param {any} self
- * @param {any} cb
- * @returns
- */
-
-// function loadRc (self, cb) {
-//   // return if conf is loaded
-//   if (confIsLoaded === true) return true
-
-//   const isRc = checkFileExistsSync(rcPath)
-//   if (isRc !== true) {
-//     self.log(blue('no yesrc.cson found'))
-//     createRc(self, cb)
-//     cb()
-//   } else {
-//     conf = cson.load(rcPath)
-//     confIsLoaded = true
-//     self.log(green('conf loaded'))
-//     return true
-//   }
-// }
 
 function loadConf (self, cb) {
   // return if conf is loaded
@@ -264,10 +229,10 @@ vorpal
     const self = this
     const isRc = checkFileExistsSync(rcPath)
     if (isRc !== true) {
-      self.log(red('you need a yesrc.cson file'))
+      self.log(red('you need a', rcFile, 'file'))
       cb()
     } else {
-      const conf = cson.load(rcPath)
+      loadConf()
       var imsPath = path.join(cliDir, conf.buildsPath)
 
       this.prompt({
@@ -288,14 +253,17 @@ vorpal
     }
   })
 
+
 vorpal
-  .command('rc', 'create the config file')
+  .command('create rc', 'create the config file')
+  .alias('rc')
+  .alias('r')
   .action(function (args, cb) {
     const self = this
     // chech if a yesrc.cson file exist
-
     const isRc = checkFileExistsSync(rcPath)
     if (isRc !== true) {
+      conf = getConf()
       this.prompt({
         type: 'confirm',
         name: 'createRc',
@@ -305,20 +273,17 @@ vorpal
         // create one
         if (result.createRc) {
           self.log(mag('create', rcFile))
-          fs.copy(path.join(__dirname, './templates/', rcFile), rcPath, function (err) {
-            if (err) return console.error(err)
-            console.log(green('created', rcFile))
+          fs.writeJson(rcPath, conf, function () {
+            self.log(blue('conf written'))
             cb()
           })
         } else {
-          // back to menu
+          self.log(blue('no conf written'))
           cb()
         }
       })
     } else {
-      // yesrc exists
-      const conf = cson.load(rcPath)
-      console.dir(conf)
+      self.log(blue('there is already a', rcFile))
       cb()
     }
   })
