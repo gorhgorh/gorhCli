@@ -1,6 +1,20 @@
 /* little utilies used everywhere */
 'use strict'
+const debug = require('debug')('utils')
 const fs = require('fs-extra')
+const _ = require('lodash')
+const path = require('path')
+
+const shelljs = require('shelljs')
+// const sh = require('./shellCmds')
+const which = shelljs.which
+// const getCliPath = sh.getCliPath
+
+const chalk = require('chalk')
+const red = chalk.red
+const blue = chalk.cyan
+const green = chalk.green
+// const mag = chalk.magenta
 
 /**
  * checks is a file exist
@@ -19,6 +33,32 @@ function checkFileExistsSync (filepath) {
 }
 
 /**
+ * check if a given command is in the path using 'which'
+ *
+ * @param {sting} cmd command to test
+ * return {obj, null} shell js obj or null if not found
+ */
+function isCmdAvail (cmd) {
+  const test = which(cmd)
+  return test
+}
+
+/**
+ * return an array of the dir names of the courses key
+ *
+ * @param {object} conf rc conf files
+ * @returns {array, bool} an array of dirnames, or false
+ */
+function getCoursesList (conf) {
+  if (_.has(conf, 'courses') !== true) {
+    debug('not valid conf')
+    return false
+  } else {
+    return conf.courses
+  }
+}
+
+/**
  *
  * remove everything, no confirm, at your own risks
  *
@@ -30,7 +70,32 @@ function clearDir (dir) {
   return true
 }
 
+
+function checkDirs (dirs, pth) {
+  debug(blue('checking exisiting dirs'))
+  const notFoundArr = dirs.filter(function (dir) {
+    if (checkFileExistsSync(path.join(pth, dir)) === true) {
+      return false
+    } else {
+      return true
+    }
+  })
+  if (notFoundArr.length > 0) {
+    debug(red('missing dirs in '), path, red(':'), notFoundArr)
+    return notFoundArr
+  } else {
+    debug(green('all dir matches'))
+    return true
+  }
+}
+
+// const theDirs = ['course-01', 'course-02', 'course-03']
+// const thePath = '/Users/jloi/code/myTools/gorhCli/sandbox/base/src/'
+// checkDirs(theDirs, thePath)
+
 module.exports = {
   checkFileExistsSync,
-  clearDir
-}
+  clearDir,
+  getCoursesList,
+  isCmdAvail,
+  checkDirs}

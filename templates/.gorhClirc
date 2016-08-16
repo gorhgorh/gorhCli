@@ -2,6 +2,7 @@
   "confVersion": 0,
   "coursePath": "src",
   "buildsPath": "builds",
+  "defaultConf": true,
   "courses": [
     {
       "name" : "course-00",
