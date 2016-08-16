@@ -11,8 +11,11 @@ const path = require('path')
 const chalk = require('chalk')
 const blue = chalk.cyan
 const red = chalk.red
-// const green = chalk.green
-// const mag = chalk.magenta
+const green = chalk.green
+const mag = chalk.magenta
+
+const sh = require('../shellCmds')
+const exec = sh.exec
 
 const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
@@ -62,6 +65,38 @@ function checkConfFiles (basePath, filesArr) {
   })
   debug(projectFilesArr)
   return projectFilesArr
+}
+
+function doInit (initOpts, self) {
+  const initArr = []
+  _.each(initOpts, function (val, key) {
+    if (val === true) initArr.push(key)
+  })
+  debug(initArr)
+  _.each(initArr, function (val) {
+    switch (val) {
+      case 'npmInit':
+        self.log(mag('creating default package.json'))
+        exec('npm init -y', { silent: true })
+        // exec('npm init --yes', { silent: true })
+        break
+      case 'gitInit':
+        self.log(mag('initialising git repo'))
+        exec('git init', { silent: true })
+        // exec('npm init --yes', { silent: true })
+        break
+      case 'copyBaseFiles':
+        self.log(mag('copying base project files'))
+        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, function () {
+          self.log(green('base files cloned'))
+        })
+        // exec('npm init --yes', { silent: true })
+        break
+
+      default:
+        break
+    }
+  })
 }
 
 /**
@@ -116,64 +151,99 @@ function Cmd (vorpal, cliConf) {
       const projectFilesArr = checkConfFiles(cliDir)
 
       // build prompt list depending on option and file present in the root dir
-      const prompts = []
+      let taskList = ['gitPrompt', 'npmPrompt', 'basePrompt']
+      const prompts = {}
+      const promptsArrFilter = []
+      const promptArr = []
+      const reqCmds = []
 
       // prompts objetcts
-      const gitPrompt = {
+      prompts.gitPrompt = {
         type: 'confirm',
         name: 'gitInit',
         default: true,
         message: 'initialise a git repo ?'
       }
-      const npmPrompt = {
+      prompts.npmPrompt = {
         type: 'confirm',
         name: 'npmInit',
         default: true,
         message: 'create a package .json ?'
       }
-      const basePrompt = {
+      prompts.basePrompt = {
         type: 'confirm',
         name: 'copyBaseFiles',
         default: true,
         message: 'copy base files ?'
       }
 
-      prompts.push(gitPrompt, npmPrompt, basePrompt)
 
-      // for each file found remove corresponding prompt
+      // for each file add to the filter array for the prompts
       _.each(projectFilesArr, function (file, index) {
-        // debug(file, index)
         switch (file) {
           case '.git':
             debug('.git found')
-            prompts.splice(0, 1)
+            promptsArrFilter.push('gitPrompt')
             break
-          case '.package.json':
-            debug('.package.json found')
-            prompts.splice(1, 1)
+          case 'package.json':
+            debug('package.json found')
+            promptsArrFilter.push('npmPrompt')
             break
           case '.editorconfig':
             debug('.editorconfig found')
-            prompts.splice(2, 1)
+            promptsArrFilter.push('basePrompt')
             break
           default:
             debug('not done yet', file)
         }
       })
-      // debug('post filter', prompts)
-      // debug('cmdOpt', cmdOpt)
-      // if yolo (no check) option is on and noPropt option is false
+      // filter out each item from the tasklist
+      _.each(promptsArrFilter, function (fString) {
+        taskList = taskList.filter(function(val) {
+          if (val !== fString) return true
+        })
+      })
+      // add the remaining task to the prompt arr
+      _.each(taskList, function (val) {
+        promptArr.push(prompts[val])
+      })
+      debug('filtered task list', taskList)
+
+      // if yolo (no check) option is off and noPropt option is false
       if (cmdOpt.yolo !== true && cmdOpt.noPrompts === false) {
-        self.prompt(prompts, function (result) {
+        // we prompt !!!
+        self.prompt(promptArr, function (result) {
           // apply prompt results to the conf
           _.each(result, function (v, k) {
             cmdOpt.initList[k] = v
           })
-          debug(cmdOpt.initList)
-          // cmdOpt.isDry = (args.options.dry === true) ? true : false
-          // _.each()
-          // const areDepsOk = checkDeps()
-          cb()
+
+          _.each(cmdOpt.initList, function (val, key) {
+            debug(val, key)
+            switch (key) {
+              case 'gitInit':
+              if (val === true) reqCmds.push('git')
+              break
+              case 'npmInit':
+              if (val === true) reqCmds.push('node')
+              if (val === true) reqCmds.push('npm')
+              break
+              case 'baseFileCopy':
+              if (val === true) reqCmds.push('svn')
+              break
+
+            }
+          })
+          // reqCmds.push('iururu') // test
+          const areDepsOk = checkDeps(reqCmds)
+          if (areDepsOk !== true) {
+            self.log(red('missing command line commands'), areDepsOk)
+            cb()
+          } else {
+            debug(green('all required cmds available'))
+            doInit(cmdOpt.initList, self)
+            cb()
+          }
         })
       } else {
         // if noPropmt option is true
