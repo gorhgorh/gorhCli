@@ -46,11 +46,14 @@ function compareConf (tarConf) {
   }
 }
 
+const confManConf = getConf()
+
 function writeConf (conf) {
 }
 
 module.exports = {
   getConf,
   compareConf,
-  writeConf
+  writeConf,
+  confManConf
 }
