@@ -5,7 +5,6 @@ const debug = require('debug')('CLI')
 const fs = require('fs-extra')
 const path = require('path')
 const makeMan = require('./tools/manifestMod')
-const cson = require('cson')
 const _ = require('lodash')
 
 const chalk = require('chalk')
@@ -34,10 +33,10 @@ const rcPath = path.join(cliDir, '/', rcFile)
 
 const confMan = require('./confMan')
 const getConf = confMan.getConf
-const compConf = confMan.compareConf
-
-
-let conf = getConf
+// const compConf = confMan.compareConf
+debug(blue('getting init config'))
+let conf = getConf()
+debug(green('got init config'))
 let confIsLoaded = false
 
 vorpal
@@ -158,16 +157,29 @@ function checkRc (pth) {
   }
 }
 
-function loadConf (self, cb) {
+/**
+ * loads the rc file if it is not loaded yet
+ *
+ * @param {object} self vorpal cmd instance
+ * @param {function} cb vorpal cb
+ * @param {bool} force force reload the config file
+ * @returns {bool} true if done
+ */
+function loadConf (self, cb, force) {
+  // if force is true load the config wherethere it exist or not
+  if (force === true) {
+    conf = getConf()
+    return true
+  }
   // return if conf is loaded
   if (confIsLoaded === true) return true
-  conf = getConf()
-
+  // id the conf object has no key courses it is not loaded yet
   if (_.has(conf, 'courses') !== true) {
+    // loadid
+    conf = getConf()
     self.log(red('error conf is not loaded'))
     cb()
   }
-
   const isRc = checkFileExistsSync(rcPath)
 
   if (isRc !== true) {
@@ -175,10 +187,13 @@ function loadConf (self, cb) {
     if (createRc(self) === true) {
       confIsLoaded = true
       self.log(green('conf loaded'))
-      if (cb) cb()
-      else return true
+      conf.confVersion = conf.confVersion + 1
+      return true
     }
-    // cb()
+  // cb()
+  } else {
+    conf.confVersion = conf.confVersion + 1
+    return true
   }
 }
 
@@ -232,7 +247,7 @@ vorpal
       self.log(red('you need a', rcFile, 'file'))
       cb()
     } else {
-      loadConf()
+      loadConf(self, cb)
       var imsPath = path.join(cliDir, conf.buildsPath)
 
       this.prompt({
@@ -253,7 +268,6 @@ vorpal
     }
   })
 
-
 vorpal
   .command('create rc', 'create the config file')
   .alias('rc')
@@ -263,7 +277,9 @@ vorpal
     // chech if a yesrc.cson file exist
     const isRc = checkFileExistsSync(rcPath)
     if (isRc !== true) {
-      conf = getConf()
+      if (_.has(conf, 'courses') !== true) {
+        loadConf(self, cb)
+      }
       this.prompt({
         type: 'confirm',
         name: 'createRc',
@@ -294,7 +310,7 @@ vorpal
   .alias('pb')
   .action(function (args, cb) {
     const self = this
-    if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '));
+    if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '))
     debug('args', args)
     if (checkRc() === true) {
       self.log(green('yooooo'))
@@ -309,31 +325,19 @@ vorpal
   .action(buildAction)
 
 vorpal
-  .command('getConf', 'get the config with rc')
+  .command('getConf', 'get the config with rc (dev command)')
   .alias('g')
   .action(function (args, cb) {
     const self = this
     const rcLoaded = loadConf(self, cb)
     if (rcLoaded === true) {
-      debug('yoo')
+      self.log(blue('configuration is loaded from', conf.config))
+      debug(conf)
+    } else {
+      self.log(red('problem loading', rcFile), 'current config', conf)
     }
-    // cb()
+    cb()
   })
-  // .hidden()
-
-// vorpal
-//   .command('build [courses...]', 'build courses')
-//   .alias('b')
-//   .action(function (args, cb) {
-//     const self = this
-//     if (args['courses'] !== undefined && args.courses.length < 1) this.log(args.courses.join(' '));
-//     debug('args', args)
-//     if (checkRc() === true) {
-//       self.log(green('yooooo'))
-//       cb()
-//     }
-//   })
-  // .hidden()
 
 vorpal
   .command('say [words...]')
@@ -342,6 +346,7 @@ vorpal
     this.log(args.words.join(' '))
     cb()
   })
+  .hidden()
 
 vorpal
   .command('t', 'test command, loadRc, list dir, prompt dir')
@@ -386,7 +391,6 @@ vorpal
     }
   })
   .hidden()
-
 
 vorpal
   .command('ttt', 'test command, use at your own risks (may erase hdd)')
