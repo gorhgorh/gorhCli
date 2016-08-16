@@ -35,7 +35,7 @@ function checkFileExistsSync (filepath) {
 /**
  * check if a given command is in the path using 'which'
  *
- * @param {sting} cmd command to test
+ * @param {string} cmd command to test
  * return {obj, null} shell js obj or null if not found
  */
 function isCmdAvail (cmd) {
