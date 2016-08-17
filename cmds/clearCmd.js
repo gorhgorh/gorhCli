@@ -16,28 +16,34 @@ function clearCmd (vorpal, cliConf) {
   return vorpal
   .command('clear', 'clean current dir')
   .alias('c')
+  .option('-f --force')
   .action(function (args, cb) {
     debug('clear called')
     const cliDir = cliConf.cliDir
     const self = this
     var msg = 'this will clean current dir ' + cliDir
-
-    this.prompt({
-      type: 'confirm',
-      name: 'erase',
-      default: false,
-      message: msg
-    }, function (result) {
-      if (result.erase) {
-        debug()
-        self.log(mag('erasing'))
-        clearDir(cliDir)
-        self.log(green('cleared'))
-        cb()
-      } else {
-        cb()
-      }
-    })
+    if (args.options.force === true) {
+      debug(blue('luke use the --force'))
+      clearDir(cliDir)
+      cb()
+    } else {
+      this.prompt({
+        type: 'confirm',
+        name: 'erase',
+        default: false,
+        message: msg
+      }, function (result) {
+        if (result.erase) {
+          debug()
+          self.log(mag('erasing'))
+          clearDir(cliDir)
+          self.log(green('cleared'))
+          cb()
+        } else {
+          cb()
+        }
+      })
+    }
   })
 }
 

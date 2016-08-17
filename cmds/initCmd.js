@@ -22,7 +22,7 @@ const checkFileExistsSync = utils.checkFileExistsSync
 const isCmdAvail = utils.isCmdAvail
 
 const requiredCmds = ['svn', 'git', 'node', 'npm']
-const requiredFiles = ['.git', 'package.json', '.editorConfig', '.gorhCli']
+const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli']
 
 /**
  * cheks a provided array of shell commands, if they all are available returns true
@@ -72,25 +72,20 @@ function doInit (initOpts, self) {
   _.each(initOpts, function (val, key) {
     if (val === true) initArr.push(key)
   })
-  debug(initArr)
+  debug(initArr, initOpts)
   _.each(initArr, function (val) {
     switch (val) {
       case 'npmInit':
         self.log(mag('creating default package.json'))
         exec('npm init -y', { silent: true })
-        // exec('npm init --yes', { silent: true })
         break
       case 'gitInit':
         self.log(mag('initialising git repo'))
         exec('git init', { silent: true })
-        // exec('npm init --yes', { silent: true })
         break
       case 'copyBaseFiles':
         self.log(mag('copying base project files'))
-        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true }, function () {
-          self.log(green('base files cloned'))
-        })
-        // exec('npm init --yes', { silent: true })
+        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
         break
 
       default:
@@ -115,7 +110,6 @@ function Cmd (vorpal, cliConf) {
   return vorpal
     .command(cmdName, cmdMsg)
     .alias('i')
-    .option('-d, --dry')
     .option('-y, --yolo')
     .option('-n, --noPrompts')
     .action(function (args, cb) {
@@ -123,20 +117,16 @@ function Cmd (vorpal, cliConf) {
       // set default cmd options
       const self = this
       const cmdOpt = {
-        isDry: false,
         yolo: false,
         noPrompts: false,
         initList:{
+          baseFileCopy: false,
           gitInit: false,
           npmInit: false,
-          baseFileCopy: false,
           rcInit: false
         }
       }
       // alter default conf depenfing on cmd options
-      if (args.options.dry === true) cmdOpt.isDry = true
-      else cmdOpt.isDry = false
-      // cmdOpt.isDry = (args.options.dry) ? true : false
       if (args.options.yolo === true) cmdOpt.yolo = true
       else cmdOpt.yolo = false
       // cmdOpt.yolo = (args.options.yolo) ? true : false
@@ -151,13 +141,19 @@ function Cmd (vorpal, cliConf) {
       const projectFilesArr = checkConfFiles(cliDir)
 
       // build prompt list depending on option and file present in the root dir
-      let taskList = ['gitPrompt', 'npmPrompt', 'basePrompt']
+      let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
       const prompts = {}
       const promptsArrFilter = []
       const promptArr = []
       const reqCmds = []
 
       // prompts objetcts
+      prompts.basePrompt = {
+        type: 'confirm',
+        name: 'copyBaseFiles',
+        default: true,
+        message: 'copy base files ?'
+      }
       prompts.gitPrompt = {
         type: 'confirm',
         name: 'gitInit',
@@ -170,15 +166,8 @@ function Cmd (vorpal, cliConf) {
         default: true,
         message: 'create a package .json ?'
       }
-      prompts.basePrompt = {
-        type: 'confirm',
-        name: 'copyBaseFiles',
-        default: true,
-        message: 'copy base files ?'
-      }
 
-
-      // for each file add to the filter array for the prompts
+      // each files added to the filter array for the prompts
       _.each(projectFilesArr, function (file, index) {
         switch (file) {
           case '.git':
