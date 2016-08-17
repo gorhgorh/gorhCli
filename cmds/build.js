@@ -55,12 +55,12 @@ function buildAction (args, cb) {
 
   // get the courses list from configuration
   // TODO : make a global config system
-  let coursesArr = getCoursesList(conf)
-  let coursesList
   if (_.has(conf, 'courses') !== true) {
     self.log('not valid configuration, please make one with the rc command')
     cb()
   } else {
+    let coursesArr = getCoursesList(conf)
+    let coursesList
     coursesArr = getCoursesList(conf)
     if (coursesArr === false) {
       debug('problem loading the courses list', coursesArr)

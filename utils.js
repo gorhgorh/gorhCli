@@ -44,10 +44,10 @@ function isCmdAvail (cmd) {
 }
 
 /**
- * return an array of the dir names of the courses key
+ * return an array of the course info from the conf
  *
  * @param {object} conf rc conf files
- * @returns {array, bool} an array of dirnames, or false
+ * @returns {array, bool} an array object, or false
  */
 function getCoursesList (conf) {
   if (_.has(conf, 'courses') !== true) {
@@ -56,6 +56,25 @@ function getCoursesList (conf) {
   } else {
     return conf.courses
   }
+}
+
+
+/**
+ * return an array of the dir names of the courses key
+ *
+ * @param {object} conf rc conf files
+ * @returns {array, bool} an array of dirnames, or false
+ */
+function getCoursesListName (conf) {
+  const courseNames = []
+  const courseList = getCoursesList(conf)
+  if (courseList === false) return false
+
+  _.each(courseList, function (o) {
+    courseNames.push(o.name)
+  })
+
+  return courseNames
 }
 
 /**
@@ -97,5 +116,6 @@ module.exports = {
   checkFileExistsSync,
   clearDir,
   getCoursesList,
+  getCoursesListName,
   isCmdAvail,
   checkDirs}

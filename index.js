@@ -36,6 +36,9 @@ const rcCmd = require('./cmds/rcCmd')
 // init command
 const initCmd = require('./cmds/initCmd')
 
+// man command
+const manCmd = require('./cmds/manifestCmd')
+
 // caches the path of the dir where the cli have been inited
 const rcFile = '.gorhClirc'
 const cliDir = gCliDir()
@@ -68,8 +71,21 @@ clearCmd(vorpal, cliConf)
 // create, write, manipulate rc file command
 rcCmd(vorpal, cliConf)
 
-// initialise the repository
+// initialise the repository cmd
 initCmd(vorpal, cliConf)
+
+// create manifests
+manCmd(vorpal, cliConf)
+
+// exit alias
+vorpal
+  .command('ex', 'exit shortcut')
+  .alias('exi')
+  .alias('e')
+  .action(function (args, cb) {
+    debug(blue('bye'))
+  })
+  .hidden()
 
 vorpal
   .delimiter('gorhCLI $')
