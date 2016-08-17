@@ -110,8 +110,8 @@ function Cmd (vorpal, cliConf) {
   return vorpal
     .command(cmdName, cmdMsg)
     .alias('i')
-    .option('-y, --yolo')
-    .option('-n, --noPrompts')
+    .option('-y, --yolo', 'do not check for available cmds')
+    .option('-n, --noPrompts', 'use default options, don\'t show prompts')
     .action(function (args, cb) {
       debug(blue(cmdName, 'start'))
       // set default cmd options
