@@ -1,35 +1,43 @@
 /* jshint -W079 */
-const fs = require('fs')
+'use strict'
+const debug = require('debug')('manifestMod')
+const fs = require('fs-extra')
 const path = require('path')
 const _ = require('lodash')
 const cmpTmpl = require('./treatManifest')
 
 const chalk = require('chalk')
 const green = chalk.green
+const blue = chalk.cyan
 
-// iterate through the yesrc.cson's courses objects
-function makeMans (conf, dest, self) {
-  _(conf.courses).forEach(function (data) {
-    makeManifest(data, data.name, dest, self)
+/**
+ * iterate through the provided courses array, building imf manifests
+ *
+ * @param {array} courses array containing imsManifest config objects
+ * @param {string} dest destination path
+ * @param {object} self vorpal object, mainly for logs
+ */
+function makeMans (courses, dest, self) {
+  _(courses).forEach(function (course) {
+    debug(blue('making manifest for', course.name))
+    makeManifest(course, course.name, dest, self)
   })
 }
 
-// writes imsmanifest file from a template with yesrc's informations
-function makeManifest (data, key, dest, s) {
-  var dirPath = path.join(dest, key)
-  function writeFile () {
-    fs.writeFile(dirPath + '/imsmanifest.xml', cmpTmpl(data), function (err) {
-      if (err) { throw (err) }
-      s.log(green('done writing'), dirPath)
-    })
-  }
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdir(dirPath, function (err) {
-      if (err) { return console.error(err) }
-      s.log(green('Directory', dirPath), 'created successfully!')
-      writeFile()
-    })
-  } else { writeFile() }
+// TODO: add options to pass manifest template file
+/**
+ * writes imsmanifest file from a template with yesrc's informations
+ *
+ * @param {object} data object containing ims infos
+ * @param {string} key course name
+ * @param {string} dest path to builds file to
+ * @param {object} self vorpal object, mainly for logs
+ */
+function makeManifest (data, key, dest, self) {
+  const dirPath = path.join(dest, key)
+  fs.ensureDirSync(dirPath)
+  fs.writeFileSync(dirPath + '/imsmanifest.xml', cmpTmpl(data))
+  self.log(green('done writing'), dirPath + '/imsmanifest.xml')
 }
 
 module.exports = makeMans
