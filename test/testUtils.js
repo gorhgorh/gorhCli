@@ -10,7 +10,7 @@ const cliPath = __dirname
  * @param {any} path
  * @param {any} dirs
  */
-function createTestDirs (path, dirs) {
+function createTestDirs (pth, dirs) {
   fs.copySync(path.join(cliPath, '../sandbox/base'), path.join(cliPath, '/testBuild'))
 }
 

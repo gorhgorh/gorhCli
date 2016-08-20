@@ -4,7 +4,7 @@ const debug = require('debug')('Rc')
 // const path = require('path')
 const fs = require('fs-extra')
 const _ = require('lodash')
-const equal = require('is-equal')
+// const equal = require('is-equal')
 const wne = require('is-equal/why')
 const sjc = require('strip-json-comments')
 
@@ -12,7 +12,7 @@ const chalk = require('chalk')
 const blue = chalk.cyan
 // const red = chalk.red
 // const green = chalk.green
-const mag = chalk.magenta
+// const mag = chalk.magenta
 
 const defaultKeys = ['_', 'configs', 'config']
 
@@ -173,7 +173,7 @@ function rcCmd (vorpal, cliConf) {
       } else {
         // get the dir rcfile object
         self.log(blue('there is already a', rcFile))
-        const rcConf = JSON.parse(sjc(fs.readFileSync(rcPath,'utf-8')))
+        const rcConf = JSON.parse(sjc(fs.readFileSync(rcPath, 'utf-8')))
         // promt for overwritting conf, and write it if users wants to
         const isOverRiden = overwriteConf(conf, rcConf, rcPath, self, cb)
         if (isOverRiden === false) self.log('failed')

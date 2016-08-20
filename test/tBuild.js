@@ -4,13 +4,13 @@ const test = require('tape')
 const fs = require('fs-extra')
 var path = require('path')
 
-var tUtils = require('./testUtils')
-var crDirs = tUtils.createTestDirs
+// var tUtils = require('./testUtils')
+// var crDirs = tUtils.createTestDirs
 
 debug('testing', testName)
 
-const cmd = require('../cmds/build')
-const sym = cmd.symCourse
+// const cmd = require('../cmds/build')
+// const sym = cmd.symCourse
 
 const cliPath = __dirname
 const testDir = path.join(__dirname, 'testDir')

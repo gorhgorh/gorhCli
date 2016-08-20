@@ -3,7 +3,7 @@
 const debug = require('debug')('clearCmd')
 
 const chalk = require('chalk')
-const red = chalk.red
+// const red = chalk.red
 const blue = chalk.cyan
 const green = chalk.green
 const mag = chalk.magenta

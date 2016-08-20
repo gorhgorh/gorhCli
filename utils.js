@@ -58,7 +58,6 @@ function getCoursesList (conf) {
   }
 }
 
-
 /**
  * return an array of the dir names of the courses key
  *
@@ -89,7 +88,6 @@ function clearDir (dir) {
   return true
 }
 
-
 function checkDirs (dirs, pth) {
   debug(blue('checking exisiting dirs'))
   const notFoundArr = dirs.filter(function (dir) {
@@ -118,4 +116,5 @@ module.exports = {
   getCoursesList,
   getCoursesListName,
   isCmdAvail,
-  checkDirs}
+  checkDirs
+}

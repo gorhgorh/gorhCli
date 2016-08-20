@@ -111,7 +111,7 @@ function Cmd (vorpal, cliConf) {
     .command(cmdName, cmdMsg)
     .alias('i')
     .option('-y, --yolo', 'do not check for available cmds')
-    .option('-n, --noPrompts', 'use default options, don\'t show prompts')
+    .option('-n, --noPrompts', "use default options, don't show prompts")
     .action(function (args, cb) {
       debug(blue(cmdName, 'start'))
       // set default cmd options
@@ -119,7 +119,7 @@ function Cmd (vorpal, cliConf) {
       const cmdOpt = {
         yolo: false,
         noPrompts: false,
-        initList:{
+        initList: {
           baseFileCopy: false,
           gitInit: false,
           npmInit: false,
@@ -188,7 +188,7 @@ function Cmd (vorpal, cliConf) {
       })
       // filter out each item from the tasklist
       _.each(promptsArrFilter, function (fString) {
-        taskList = taskList.filter(function(val) {
+        taskList = taskList.filter(function (val) {
           if (val !== fString) return true
         })
       })
@@ -211,15 +211,15 @@ function Cmd (vorpal, cliConf) {
             debug(val, key)
             switch (key) {
               case 'gitInit':
-              if (val === true) reqCmds.push('git')
-              break
+                if (val === true) reqCmds.push('git')
+                break
               case 'npmInit':
-              if (val === true) reqCmds.push('node')
-              if (val === true) reqCmds.push('npm')
-              break
+                if (val === true) reqCmds.push('node')
+                if (val === true) reqCmds.push('npm')
+                break
               case 'baseFileCopy':
-              if (val === true) reqCmds.push('svn')
-              break
+                if (val === true) reqCmds.push('svn')
+                break
 
             }
           })
