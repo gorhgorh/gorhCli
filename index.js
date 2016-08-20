@@ -12,6 +12,11 @@ const blue = chalk.cyan
 const green = chalk.green
 // const mag = chalk.magenta
 
+const startMsg = require('./startMsgs')
+
+
+console.log(startMsg())
+
 const vorpal = require('vorpal')()
 
 const utils = require('./utils')
