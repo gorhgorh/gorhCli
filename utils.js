@@ -106,9 +106,12 @@ function checkDirs (dirs, pth) {
   }
 }
 
+function promptdirList (self, cb)
+
 // const theDirs = ['course-01', 'course-02', 'course-03']
 // const thePath = '/Users/jloi/code/myTools/gorhCli/sandbox/base/src/'
 // checkDirs(theDirs, thePath)
+
 
 module.exports = {
   checkFileExistsSync,

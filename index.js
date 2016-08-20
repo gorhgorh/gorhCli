@@ -41,6 +41,10 @@ const manCmd = require('./cmds/manifestCmd')
 const build = require('./cmds/buildCmd')
 const buildCmd = build.Cmd
 
+// test command
+const test = require('./cmds/testCmd')
+const testCmd = test.Cmd
+
 // caches the path of the dir where the cli have been inited
 const rcFile = '.gorhClirc'
 const cliDir = gCliDir()
@@ -81,6 +85,9 @@ manCmd(vorpal, cliConf)
 
 // create manifests
 buildCmd(vorpal, cliConf)
+
+// test cmd
+testCmd(vorpal, cliConf)
 
 // exit alias
 vorpal
