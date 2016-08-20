@@ -22,7 +22,7 @@ const defaultKeys = ['_', 'configs', 'config']
  *
  * @param {any} conf
  * @param {any} keys
- * @returns
+ * @returns {object} cleaned configuration
  */
 function cleanRc (conf, keys) {
   let clConf = JSON.parse(JSON.stringify(conf))

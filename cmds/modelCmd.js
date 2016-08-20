@@ -31,4 +31,4 @@ function Cmd (vorpal, cliConf) {
   })
 }
 
-module.exports = Cmd
+module.exports = {Cmd}

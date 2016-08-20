@@ -6,6 +6,7 @@ const debug = require('debug')(cmdName)
 const path = require('path')
 const fs = require('fs-extra')
 const _ = require('lodash')
+var link = require('fs-symlink')
 
 const chalk = require('chalk')
 const blue = chalk.cyan
@@ -18,10 +19,9 @@ const isCmdAvail = utils.isCmdAvail
 const getCoursesList = utils.getCoursesList
 const checkFileExistsSync = utils.checkFileExistsSync
 
-const srcDir = 'course'
-const tarDir = 'course-03'
-const srcPath = '/Users/jloi/code/myTools/gorhCli/sandbox/testDir/src'
-var link = require('fs-symlink')
+// const srcDir = 'course'
+// const tarDir = 'course-03'
+// const srcPath = '/Users/jloi/code/myTools/gorhCli/sandbox/testDir/src'
 
 /**
  * check if a dir is a symlink
@@ -127,7 +127,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
   return true
 }
 
-symCourse(srcDir, tarDir, srcPath)
+// symCourse(srcDir, tarDir, srcPath)
 
 function Cmd (vorpal, cliConf) {
   // const rcPath = cliConf.rcPath
