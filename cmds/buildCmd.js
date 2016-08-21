@@ -142,7 +142,7 @@ function Cmd (vorpal, cliConf) {
       // check for dependencies
       // grunt
       debug(blue('checking deps'))
-      if (isCmdAvail('grunt') === null) {
+      if (isCmdAvail('grunt') === false) {
         self.log(red('grunt not available'))
         return cb()
       } else {
