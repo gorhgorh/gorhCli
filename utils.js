@@ -16,6 +16,9 @@ const blue = chalk.cyan
 const green = chalk.green
 // const mag = chalk.magenta
 
+// default required commands
+const requiredCmds = ['git', 'node', 'npm']
+
 /**
  * checks is a file exist
  *
@@ -40,7 +43,27 @@ function checkFileExistsSync (filepath) {
  */
 function isCmdAvail (cmd) {
   const test = which(cmd)
-  return test
+  if (test === null) return false
+  else return true
+}
+
+/**
+ * checks a provided array of shell commands, if they all are available returns true
+ *
+ * @param {array} array of string, each string representing a cmd to test
+ * @returns {bool} true if all met, array of missing cmds if fails
+ */
+function checkDeps (deps) {
+  if (!deps) deps = requiredCmds
+  debug(blue('cheking dependencies'), deps)
+  const missingArr = []
+  _.each(deps, function (cmd) {
+    if (isCmdAvail(cmd) === false) missingArr.push(cmd)
+  })
+  if (missingArr.length > 0) {
+    debug(red('missing commands'), missingArr)
+    return missingArr
+  } else return true
 }
 
 /**
@@ -88,6 +111,20 @@ function clearDir (dir) {
   return true
 }
 
+/**
+ * return an array of the dir names of the courses key of the courses arr
+ *
+ * @param {object} courses array of courese info
+ * @returns {array, bool} an array of dirnames, or false
+ */
+function getCoursesListNames (courses) {
+  const courseNames = []
+  _.each(courses, function (o) {
+    courseNames.push(o.name)
+  })
+  return courseNames
+}
+
 function checkDirs (dirs, pth) {
   debug(blue('checking exisiting dirs'))
   const notFoundArr = dirs.filter(function (dir) {
@@ -106,12 +143,33 @@ function checkDirs (dirs, pth) {
   }
 }
 
-function promptdirList (self, cb)
+/**
+ * get the list of the available directories
+ *
+ * @param {object} conf rc conf
+ * @param {object} opts option (prompt:bool,type:string)
+ * @param {object} self vorpal cmd instance
+ * @param {function} cb vorpal cmd cb
+ * @returns
+ */
+function getDirList (conf, opts, self, cb) {
+  debug('getListDir Start')
+  const dirList = []
+  const courses = getCoursesList(conf)
+  if (courses === false) {
+    debug('no valid courses list')
+    return false
+  }
+  const coursesNames = courses
+  debug(courses)
+
+  if (cb) return cb()
+  else return dirList
+}
 
 // const theDirs = ['course-01', 'course-02', 'course-03']
 // const thePath = '/Users/jloi/code/myTools/gorhCli/sandbox/base/src/'
 // checkDirs(theDirs, thePath)
-
 
 module.exports = {
   checkFileExistsSync,
@@ -119,5 +177,7 @@ module.exports = {
   getCoursesList,
   getCoursesListName,
   isCmdAvail,
-  checkDirs
+  checkDirs,
+  getDirList,
+  checkDeps
 }

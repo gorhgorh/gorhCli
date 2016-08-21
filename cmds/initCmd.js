@@ -19,29 +19,9 @@ const exec = sh.exec
 
 const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
-const isCmdAvail = utils.isCmdAvail
+const checkDeps = utils.checkDeps
 
-const requiredCmds = ['svn', 'git', 'node', 'npm']
 const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli']
-
-/**
- * cheks a provided array of shell commands, if they all are available returns true
- *
- * @param {array} array of string, each string representing a cmd to test
- * @returns {bool} true if all met, array of missing cmds if fails
- */
-function checkDeps (deps) {
-  if (!deps) deps = requiredCmds
-  debug(blue('cheking dependencies'), deps)
-  const missingArr = []
-  _.each(deps, function (cmd) {
-    if (isCmdAvail(cmd) === null) missingArr.push(cmd)
-  })
-  if (missingArr.length > 0) {
-    debug(red('missing commands'), missingArr)
-    return missingArr
-  } else return true
-}
 
 /**
  * check the provided path for files provided as the second arg (array, optional)
@@ -61,7 +41,6 @@ function checkConfFiles (basePath, filesArr) {
     } else {
       debug(blue('no', file, 'found'))
     }
-  // if (isCmdAvail(cmd) === null) missingArr.push(cmd)
   })
   debug(projectFilesArr)
   return projectFilesArr
