@@ -14,8 +14,7 @@ const green = chalk.green
 
 const startMsg = require('./startMsgs')
 
-
-console.log(startMsg())
+console.log(green(startMsg()))
 
 const vorpal = require('vorpal')()
 
