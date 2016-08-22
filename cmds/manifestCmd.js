@@ -1,6 +1,6 @@
 /* demo command use this file as a base for new ones */
 'use strict'
-const cmdName = 'Manifest'
+const cmdName = 'manifests'
 const cmdMsg = 'default msg'
 const debug = require('debug')('gorhCli:' + cmdName)
 const path = require('path')
@@ -66,11 +66,12 @@ function Cmd (vorpal, cliConf) {
     .option('-l, --list', 'select a list of dirs')
     .option('-c, --check', 'dry run, checks if the dir in the conf are available')
     .action(function (args, cb) {
-      debug(blue(cmdName, 'start'))
-      debug(blue(cmdName, 'options'), args)
       const self = this
       let coursesNames = []
       let areCoursesThere
+      self.log(blue('Starting make', cmdName))
+      debug(blue(cmdName, 'options'), args)
+
       if (_.has(args.options, 'single') === true) {
         debug('-s option action')
         coursesNames.push(args.options.single)

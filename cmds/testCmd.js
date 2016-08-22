@@ -28,7 +28,7 @@ function Cmd (vorpal, cliConf) {
   // const buildPath = path.join(cliDir, conf.buildsPath)
 
   return vorpal
-    .command('demo', cmdMsg)
+    .command('test', cmdMsg)
     .alias('t')
     .option('-s, --single [course]', 'single course, dirname provided as arg')
     .option('-l, --list', 'select a list of dirs')
@@ -54,13 +54,6 @@ function Cmd (vorpal, cliConf) {
       }
 
       debug('dirInfos', dirsInfos)
-      if (dirsInfos !== false) {
-        buildCourseList(dirsInfos, self)
-      } else {
-        debug('dirsinfo = false')
-        self.log('no available dir to build')
-      }
-
 
     // cb()
     })
