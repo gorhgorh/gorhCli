@@ -319,31 +319,34 @@ function buildCourseList (dirsInfos, self) {
   const fileList = dirsInfos.fList.existingArr
 
   fs.ensureDirSync(buildPath)
-
+  self.log(blue('Starting building courses:'), fileList.join(', '))
   _.each(fileList, function (file) {
     const courseInfo = {
       courseName: file,
       srcPath,
       buildPath
     }
-    buildCourse(courseInfo)
-    self.log(green('built'), courseInfo.courseName)
+    buildCourse(courseInfo, self)
+    self.log(green('Built'), courseInfo.courseName)
   })
   // symCourse('course', 'course-01', srcPath)
 }
 
-function buildCourse (courseInfo) {
+function buildCourse (courseInfo, self) {
   if (isCmdAvail(['grunt']) === false) {
     debug('no grunt')
     return false
   }
-  debug(blue('start buildCourse', courseInfo.courseName))
+  debug(blue('Start buildCourse:'), courseInfo.courseName)
+
   debug(courseInfo)
   const srcPath = courseInfo.srcPath
   const buildPath = courseInfo.buildPath
   const courseName = courseInfo.courseName
   symCourse(courseName, 'course', srcPath)
-  if (exec('grunt build').code !== 0) {
+
+  self.log(blue('Start buildCourse'), courseInfo.courseName)
+  if (exec('grunt build', {silent: true}).code !== 0) {
     debug(red('Error: grunt cmd failed'))
     return false
   }
