@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict'
-const debug = require('debug')('clearCmd')
+const debug = require('debug')('gorhCli:' + 'clearCmd')
 
 const chalk = require('chalk')
 // const red = chalk.red

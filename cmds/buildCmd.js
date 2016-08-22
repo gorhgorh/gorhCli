@@ -29,12 +29,7 @@ const checkFileExistsSync = utils.checkFileExistsSync
  * @param {any} dir
  * @returns
  */
-function isDirSymlink (dir) {
-  const rPath = fs.realpathSync(dir)
-  debug(blue('realpath'), rPath)
-  if (rPath !== dir) return true
-  else return false
-}
+
 
 /**
  * link a the src folder to the tar one, from the srcPath dir
@@ -42,7 +37,7 @@ function isDirSymlink (dir) {
  * @param {string} srcDir origin folder
  * @param {string} tarDir symlink
  * @param {string} srcPath path where the link should be
- * @param {bool} optional, default truen, overwrite the existing symlink
+ * @param {bool} overwrite, (optional default true), overwrite the existing symlink
  * @returns {bool} wherever it succed or not
  */
 function symCourse (srcDir, tarDir, srcPath, overwrite) {
