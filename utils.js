@@ -317,21 +317,18 @@ function buildCourseList (dirsInfos) {
   const buildPath = dirsInfos.buildPath
   const dirObjects = dirsInfos.dirO
   const fileList = dirsInfos.fList.existingArr
-  const courseInfo = {
-    courseName: fileList[0],
-    srcPath,
-    buildPath
-  }
+
   fs.ensureDirSync(buildPath)
-  buildCourse(courseInfo)
 
-  // _.each(fileList, function (file) {
-  //   const courseInfo = {
-  //     courseName: file,
-  //     srcPath
-  //   }
-
-  // })
+  _.each(fileList, function (file) {
+    const courseInfo = {
+      courseName: file,
+      srcPath,
+      buildPath
+    }
+    buildCourse(courseInfo)
+    // self.log(green('built'), courseInfo.courseName)
+  })
   // symCourse('course', 'course-01', srcPath)
 
 }
@@ -355,12 +352,9 @@ function buildCourse (courseInfo) {
   const mvPath = path.join(buildPath, courseName)
   const buildSrcPath = path.join(buildPath, '../build')
 
-  // debug(red(buildSrcPath, mvPath))
   mv(buildSrcPath, mvPath)
+  debug(green('course built:'), courseName)
 }
-// const theDirs = ['course-01', 'course-02', 'course-03']
-// const thePath = '/Users/jloi/code/myTools/gorhCli/sandbox/base/src/'
-// checkDirs(theDirs, thePath)
 
 module.exports = {
   checkFileExistsSync,
