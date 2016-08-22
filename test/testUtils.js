@@ -1,5 +1,7 @@
 /* little utilies used everywhere */
 'use strict'
+const testName = 'utils'
+const debug = require('debug')('gorhCli:test:' + testName)
 const fs = require('fs-extra')
 const path = require('path')
 

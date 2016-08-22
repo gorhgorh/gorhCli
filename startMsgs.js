@@ -1,23 +1,23 @@
 const debug = require('debug')('gorhCli:startMsg')
 const msgs = [
   `
- _____         _          _____ __    _____
-|   __|___ ___| |_    ___|     |  |  |     |
-|  |  | . |  _|   |  |___|   --|  |__|-   -|
-|_____|___|_| |_|_|      |_____|_____|_____|
+ _____         _       _____ __    _____
+|   __|___ ___| |_ ___|     |  |  |     |
+|  |  | . |  _|   |___|   --|  |__|-   -|
+|_____|___|_| |_|_|   |_____|_____|_____|
 `,
   `
 
-  ██████╗  ██████╗ ██████╗ ██╗  ██╗           ██████╗██╗     ██╗
-██╔════╝ ██╔═══██╗██╔══██╗██║  ██║          ██╔════╝██║     ██║
-██║  ███╗██║   ██║██████╔╝███████║    █████╗██║     ██║     ██║
-██║   ██║██║   ██║██╔══██╗██╔══██║    ╚════╝██║     ██║     ██║
-╚██████╔╝╚██████╔╝██║  ██║██║  ██║          ╚██████╗███████╗██║
- ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝           ╚═════╝╚══════╝╚═╝
+ ██████╗  ██████╗ ██████╗ ██╗  ██╗       ██████╗██╗     ██╗
+██╔════╝ ██╔═══██╗██╔══██╗██║  ██║      ██╔════╝██║     ██║
+██║  ███╗██║   ██║██████╔╝███████║█████╗██║     ██║     ██║
+██║   ██║██║   ██║██╔══██╗██╔══██║╚════╝██║     ██║     ██║
+╚██████╔╝╚██████╔╝██║  ██║██║  ██║      ╚██████╗███████╗██║
+ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝       ╚═════╝╚══════╝╚═╝
 `,
   `
 ╔═╗┌─┐┬─┐┬ ┬     ╔═╗╦  ╦
-║ ╦│ │├┬┘├─┤  ───║  ║  ║
+║ ╦│ │├┬┘├─┤ ─── ║  ║  ║
 ╚═╝└─┘┴└─┴ ┴     ╚═╝╩═╝╩
 `,
   `
@@ -32,24 +32,24 @@ const msgs = [
       ░     ░ ░     ░      ░  ░  ░   ░ ░          ░  ░ ░
                                      ░
 `,
-  '(_, () /? |-|   ( |_ |',
   `
-##         #            ## #   ###
-#   ### ### ###         #   #    #
-# # # # #   # #     ### #   #    #
-# # ### #   # #         #   #    #
- ##                      ## ### ###
+(_, () /? |-|   ( |_ |
 `,
   `
-.sSSSSs.                                                     .sSSSSs.    SSSSS       SSSSS
-SSSSSSSSSs. .sSSSSs.    .sSSSSSSSs. .sSSS SSSSS              SSSSSSSSSs. SSSSS       SSSSS
-S SSS SSSSS S SSSSSSSs. S SSS SSSSS S SSS SSSSS              S SSS SSSSS S SSS       S SSS
-S  SS SSSS' S  SS SSSSS S  SS SSSS' S  SS SSSSS              S  SS SSSS' S  SS       S  SS
-S..SS       S..SS SSSSS S..SSsSSSa. S..SSsSSSSS      sssssss S..SS       S..SS       S..SS
-S:::S sSSs. S:::S SSSSS S:::S SSSSS S:::S SSSSS              S:::S SSSSS S:::S       S:::S
-S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS              S;;;S SSSSS S;;;S       S;;;S
-S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS              S%%%S SSSSS S%%%S SSSSS S%%%S
-SSSSSsSSSSS SSSSSsSSSSS SSSSS SSSSS SSSSS SSSSS              SSSSSsSSSSS SSSSSsSS;:' SSSSS
+##          #       ##  #   ###
+#   ### ### ###     #   #    #
+# # # # #   # # ### #   #    #
+# # ### #   # #     #   #    #
+ ##                  ## ### ###
+`,
+  `
+.sSSSSs.                                                .sSSSSs.    SSSSS       SSSSS
+SSSSSSSSSs. .sSSSSs.    .sSSSSSSSs. .sSSS SSSSS         SSSSSSSSSs. SSSSS       SSSSS
+S SSS SSSSS S SSSSSSSs. S SSS SSSSS S SSS SSSSS         S SSS SSSSS S SSS       S SSS
+S..SS       S..SS SSSSS S..SSsSSSa. S..SSsSSSSS sssssss S..SS       S..SS       S..SS
+S:::S sSSs. S:::S SSSSS S:::S SSSSS S:::S SSSSS         S:::S SSSSS S:::S       S:::S
+S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS         S%%%S SSSSS S%%%S SSSSS S%%%S
+SSSSSsSSSSS SSSSSsSSSSS SSSSS SSSSS SSSSS SSSSS         SSSSSsSSSSS SSSSSsSS;:' SSSSS
 `,
   `
        ___                     __                        ___

@@ -63,7 +63,7 @@ const getConf = confMan.getConf
 // const compConf = confMan.compareConf
 debug(blue('getting init config'))
 let conf = getConf()
-debug(green('got init config'), conf.version)
+debug(green('got init config, v:'), conf.confVersion)
 // let confIsLoaded = false
 
 const cliConf = {
