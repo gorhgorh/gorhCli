@@ -1,13 +1,13 @@
 /* little utilies used everywhere */
 'use strict'
-const debug = require('debug')('utils')
+const debug = require('debug')('gorhCli:utils')
 const fs = require('fs-extra')
 const _ = require('lodash')
 const path = require('path')
-
+var link = require('fs-symlink')
 const shelljs = require('shelljs')
-// const sh = require('./shellCmds')
 const which = shelljs.which
+// const sh = require('./shellCmds')
 // const getCliPath = sh.getCliPath
 
 const chalk = require('chalk')

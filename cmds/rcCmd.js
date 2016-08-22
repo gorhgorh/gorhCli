@@ -1,6 +1,6 @@
 /* command to build adapt courses require grunt */
 'use strict'
-const debug = require('debug')('Rc')
+const debug = require('debug')('gorhCli:rc')
 // const path = require('path')
 const fs = require('fs-extra')
 const _ = require('lodash')

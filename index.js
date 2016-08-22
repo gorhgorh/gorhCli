@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 /* global */
-const debug = require('debug')('CLI')
+const debug = require('debug')('gorhCli:CLI')
 const path = require('path')
 // const _ = require('lodash')
 const os = require('os')

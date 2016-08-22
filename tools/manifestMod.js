@@ -1,6 +1,6 @@
 /* jshint -W079 */
 'use strict'
-const debug = require('debug')('manifestMod')
+const debug = require('debug')('gorhCli:manifestMod')
 const fs = require('fs-extra')
 const path = require('path')
 const _ = require('lodash')

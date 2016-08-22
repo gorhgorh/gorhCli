@@ -1,5 +1,5 @@
 const testName = 'testBuild'
-const debug = require('debug')(testName)
+const debug = require('debug')('gorhCli:test:' + testName)
 const test = require('tape')
 const fs = require('fs-extra')
 var path = require('path')

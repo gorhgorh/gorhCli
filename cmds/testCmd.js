@@ -2,7 +2,7 @@
 'use strict'
 const cmdName = 'test'
 const cmdMsg = 'command to test new features, expect magic to happend'
-const debug = require('debug')(cmdName)
+const debug = require('debug')('gorhCli:' + cmdName)
 // const path = require('path')
 // const fs = require('fs-extra')
 // const _ = require('lodash')
