@@ -1,4 +1,5 @@
 'use strict'
+const debug = require('debug')('gorhCli:extractTable')
 const XLSX = require('xlsx')
 const path = require('path')
 const _ = require('lodash')
@@ -11,7 +12,7 @@ const readOpts = {}
 const workBook = XLSX.readFile(filePath, readOpts)
 
 var sheetName = workBook.SheetNames[0] // get the first sheet name
-// console.log(workBook.SheetNames)
+// debug(workBook.SheetNames)
 
 var sheetData = XLSX.utils.sheet_to_json(workBook.Sheets[sheetName]) // get a js Array containing all rows
 
@@ -21,7 +22,7 @@ function getHeadRow (entry) {
   _.each(entry, (v, k) => {
     headRow.push(k.replace(/_/g, ' ').replace(/\n/g, ''))
   })
-  console.log(headRow)
+  debug(headRow)
   return headRow
 }
 
@@ -37,7 +38,7 @@ function getData () {
   sheetData.forEach((val, index) => {
     let rowArr = []
     _.each(val, (entry, key) => {
-      console.log(entry, key)
+      debug(entry, key)
       rowArr.push(entry)
     })
     allDataArr.push(rowArr)

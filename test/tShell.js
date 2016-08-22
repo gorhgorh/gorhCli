@@ -1,3 +1,6 @@
+'use strict'
+const testName = 'shell'
+const debug = require('debug')('gorhCli:test:' + testName)
 var test = require('tape')
 
 var sh = require('../shellCmds')

@@ -1,5 +1,7 @@
 /* little utilies used everywhere */
 'use strict'
+const testName = 'utils'
+const debug = require('debug')('gorhCli:test:' + testName)
 const fs = require('fs-extra')
 const path = require('path')
 
@@ -10,7 +12,7 @@ const cliPath = __dirname
  * @param {any} path
  * @param {any} dirs
  */
-function createTestDirs (path, dirs) {
+function createTestDirs (pth, dirs) {
   fs.copySync(path.join(cliPath, '../sandbox/base'), path.join(cliPath, '/testBuild'))
 }
 

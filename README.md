@@ -64,7 +64,9 @@ pour le moment sont implémentés :
   - make the translation system modular
   - make entry in the yesrc
 - add sftp uploads (rsync ?) command
+- use getDirsInfos fn in manifest
 - add build command
+- 
 
 - create an init function for the cli
   - load rc if there is one
