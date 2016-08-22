@@ -306,7 +306,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
   return true
 }
 
-function buildCourseList (dirsInfos) {
+function buildCourseList (dirsInfos, self) {
   debug(red('start buildCourseList'), dirsInfos)
   debug(dirsInfos)
   if (dirsInfos.fList.existingArr === false) {
@@ -327,10 +327,9 @@ function buildCourseList (dirsInfos) {
       buildPath
     }
     buildCourse(courseInfo)
-    // self.log(green('built'), courseInfo.courseName)
+    self.log(green('built'), courseInfo.courseName)
   })
   // symCourse('course', 'course-01', srcPath)
-
 }
 
 function buildCourse (courseInfo) {

@@ -55,7 +55,7 @@ function Cmd (vorpal, cliConf) {
 
       debug('dirInfos', dirsInfos)
       if (dirsInfos !== false) {
-        buildCourseList(dirsInfos)
+        buildCourseList(dirsInfos, self)
       } else {
         debug('dirsinfo = false')
         self.log('no available dir to build')
