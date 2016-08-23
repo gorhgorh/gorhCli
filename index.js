@@ -48,6 +48,12 @@ const buildCmd = build.Cmd
 // build command
 const zipCmd = require('./cmds/zipCmd')
 
+// build command
+const switchCmd = require('./cmds/switchCmd')
+
+// build command
+const modCmd = require('./cmds/modCmd')
+
 // test command
 const test = require('./cmds/testCmd')
 const testCmd = test.Cmd
@@ -96,6 +102,31 @@ buildCmd(vorpal, cliConf)
 // test cmd
 testCmd(vorpal, cliConf)
 
+vorpal
+  .command('foo <requiredArg> [optionalArg]')
+  .option('-v, --verbose', 'Print foobar instead.')
+  .description('Outputs "bar".')
+  .alias('foosball')
+  .action(function (args, callback) {
+    debug(args)
+    if (args.options.verbose) {
+      this.log('foobar')
+    } else {
+      this.log('bar')
+    }
+    callback()
+  })
+
+vorpal
+  .command('make')
+  .description('builds, make manifests, zips all the dirs ')
+  .action(function (args, callback) {
+    vorpal.execSync('b')
+    vorpal.execSync('m')
+    vorpal.execSync('z')
+    callback()
+  })
+
 // exit alias
 vorpal
   .command('exi', 'exit shortcut')
@@ -109,5 +140,7 @@ vorpal
 vorpal
   .delimiter('gorhCLI $')
   .use(zipCmd)
+  .use(modCmd)
+  .use(switchCmd)
   .show()
   .parse(process.argv)

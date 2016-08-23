@@ -6,31 +6,26 @@ const path = require('path')
 const fs = require('fs-extra')
 const _ = require('lodash')
 const archiver = require('archiver')
-const archive = archiver('zip')
-const async = require('async')
 const chalk = require('chalk')
-// const blue = chalk.cyan
+const blue = chalk.cyan
 const red = chalk.red
-// const green = chalk.green
+const green = chalk.green
 // const mag = chalk.magenta
-
-const zipMod = require('../tools/zipMod')
 
 const confMan = require('../confMan')
 const getConf = confMan.getConf
-
-function listDirs (dirsPath) {
-  return fs.readdirSync(dirsPath).filter(function(file) {
-    return fs.statSync(path.join(dirsPath, file)).isDirectory();
-  });
-}
+const utils = require('../utils')
+const listDirs = utils.listDirs
 
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
+  debug('zipping:', dirName)
+  const archive = archiver('zip')
   const output = fs.createWriteStream(path.join(tarPath, dirName + '.zip'))
 
+  self.log(blue('starting archive:'), dirName)
+
   output.on('close', function () {
-    console.log(archive.pointer() + ' total bytes')
-    console.log('archiver has been finalized and the output file descriptor has closed.')
+    self.log(green('archive'), dirName, green('written, total bytes:'), archive.pointer())
   })
 
   archive.on('error', function (err) {
@@ -39,13 +34,11 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
 
   archive.pipe(output)
   const buildPath = path.join(buildsPath, dirName)
-  debug('buildsPath', buildPath)
   archive.bulk([
     { expand: true, cwd: buildPath, src: ['**'] }
   ])
 
   archive.finalize()
-  self.log('archive made:', dirName)
 }
 
 function zipDirs (args, cb) {
@@ -67,16 +60,11 @@ function zipDirs (args, cb) {
     return cb()
   }
 
-  _.each(dirList, function (dirName) {
-    debug(dirName)
-    zipDir(dirName, archivesPath, buildsPath, self)
-  })
-
   fs.ensureDirSync(archivesPath)
 
-  // debug('cliDir:', cliDir)
-  // debug('dirs in buildsPath:', listDirs(buildsPath))
-  // debug(conf)
+  _.each(dirList, function (dirName) {
+    zipDir(dirName, archivesPath, buildsPath, self)
+  })
 }
 
 module.exports = function (vorpal, options) {

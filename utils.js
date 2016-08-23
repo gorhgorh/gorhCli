@@ -307,6 +307,34 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
   return true
 }
 
+/**
+ * read the given path and return an array containig all directories name
+ * if a regex is provided, if filter the dirlist by it
+ *
+ * @param {string} dirsPath
+ * @param {regex} regex
+ * @returns {array}
+ */
+function listDirs (dirsPath, regex) {
+  return fs.readdirSync(dirsPath).filter(function (file) {
+    // debug(file)
+    // debug('file', file, 'reg', regex, 'match', file.match(regex))
+    if (fs.statSync(path.join(dirsPath, file)).isDirectory() === true) {
+      if (regex) {
+        if (file.match(regex) !== null) {
+          debug('match', file)
+          return true
+        }
+        // debug('do not match:regex', file, regex)
+        return false
+      }
+      // debug('match:isdir')
+      return true
+    }
+    return false
+  })
+}
+
 function buildCourseList (dirsInfos, self) {
   debug(red('start buildCourseList'), dirsInfos)
   debug(dirsInfos)
@@ -371,5 +399,6 @@ module.exports = {
   symCourse,
   isDirSymlink,
   buildCourseList,
-  buildCourse
+  buildCourse,
+  listDirs
 }
