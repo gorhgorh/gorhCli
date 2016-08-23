@@ -120,9 +120,11 @@ function clearDir (dir) {
  */
 function isDirSymlink (dir) {
   const rPath = fs.realpathSync(dir)
-  debug(blue('realpath'), rPath)
   if (rPath !== dir) return true
-  else return false
+  else {
+    debug(blue('realpath'), rPath)
+    return false
+  }
 }
 
 /**
@@ -248,7 +250,6 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
   // change cwd to srcPath
   const prevDiv = process.cwd()
   try {
-    debug(blue('changing cwd to:'), srcPath)
     process.chdir(srcPath)
     debug(blue('New directory: '), process.cwd())
   } catch (err) {
@@ -284,7 +285,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
     // it is a symlink
     } else {
       debug(blue('src dir', srcDir, 'is a symlink'))
-      debug('overwrite', overwrite)
+      debug(blue('overwrite arg:'), overwrite)
       // overwrite
       if (overwrite === undefined || overwrite === true) {
         debug(blue('overwrite start'))
@@ -315,7 +316,7 @@ function buildCourseList (dirsInfos, self) {
   }
   const srcPath = dirsInfos.srcPath
   const buildPath = dirsInfos.buildPath
-  const dirObjects = dirsInfos.dirO
+  // const dirObjects = dirsInfos.dirO
   const fileList = dirsInfos.fList.existingArr
 
   fs.ensureDirSync(buildPath)

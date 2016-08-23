@@ -22,8 +22,9 @@ const cliVersion = pkg.version
  *
  * @returns {object} configuration file
  */
-function getConf () {
-  const conf = require('rc')('gorhCli', defaultConf)
+function getConf (rcName) {
+  if (!rcName) rcName = 'gorhCli'
+  const conf = require('rc')(rcName, defaultConf)
   if (_.has(conf, 'cliVersion') === false) conf.cliVersion = cliVersion
   return conf
 }

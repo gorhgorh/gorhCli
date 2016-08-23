@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const path = require('path')
 
 const cliPath = __dirname
+debug('star test for', testName)
 /**
  * create directories for the test to be ran
  *

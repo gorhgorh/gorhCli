@@ -45,6 +45,9 @@ const manCmd = require('./cmds/manifestCmd')
 const build = require('./cmds/buildCmd')
 const buildCmd = build.Cmd
 
+// build command
+const zipCmd = require('./cmds/zipCmd')
+
 // test command
 const test = require('./cmds/testCmd')
 const testCmd = test.Cmd
@@ -105,5 +108,6 @@ vorpal
 
 vorpal
   .delimiter('gorhCLI $')
+  .use(zipCmd)
   .show()
   .parse(process.argv)

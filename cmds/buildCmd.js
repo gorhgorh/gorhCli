@@ -16,7 +16,6 @@ const blue = chalk.cyan
 const utils = require('../utils')
 const getDirsInfo = utils.getDirsInfo
 const buildCourseList = utils.buildCourseList
-const buildCourse = utils.buildCourse
 // const checkFileExistsSync = utils.checkFileExistsSync
 
 function Cmd (vorpal, cliConf) {
@@ -30,7 +29,6 @@ function Cmd (vorpal, cliConf) {
   return vorpal
     .command('build', cmdMsg)
     .alias('b')
-    .option('-s, --single [course]', 'single course, dirname provided as arg')
     .option('-l, --list', 'select a list of dirs')
     .action(function (args, cb) {
       const self = this
@@ -48,14 +46,24 @@ function Cmd (vorpal, cliConf) {
       debug(blue('dirlistInfos'), dirsInfos)
 
       // TODO treat list case
-      if (args.options.list === true) {
-        debug(blue('list'), args.options.list)
-        return cb()
-      }
-
-      debug('dirInfos', dirsInfos)
       if (dirsInfos !== false) {
-        buildCourseList(dirsInfos, self)
+        if (args.options.list === true) {
+          let coursesNames = dirsInfos.fList.existingArr
+          debug(blue('list option'), args.options)
+          self.prompt({
+            type: 'checkbox',
+            name: 'chosenList',
+            message: 'select the dirs you want to build',
+            choices: coursesNames
+          }, function (result) {
+            dirsInfos.fList.existingArr = result.chosenList
+            buildCourseList(dirsInfos, self)
+            return cb()
+          })
+        } else {
+          buildCourseList(dirsInfos, self)
+          return cb()
+        }
       } else {
         debug('dirsinfo = false')
         self.log('no available dir to build')

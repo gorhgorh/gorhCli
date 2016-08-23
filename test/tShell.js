@@ -16,9 +16,11 @@ function createTestDirs () {
 createTestDirs()
 
 test('getCliPath ', function (t) {
+  debug('star test for', testName)
   // it should return a string containg a path
   t.equal(typeof (cliPath), 'string')
   // it should return the dir where it is invoqued (here the project base)
   t.equal(cliPath + '/test', __dirname)
+  debug('results:', cliPath + '/test', __dirname)
   t.end()
 })
