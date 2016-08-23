@@ -1,0 +1,16 @@
+{
+  "name": "cliConf",
+  "confVersion": 0,
+  "coursePath": "src",
+  "buildsPath": "builds",
+  "defaultConf": true,
+  "courses": [
+    {
+      "name" : "course-01",
+      "scId": "Module 1. test module",
+      "scTxt": "",
+      "scManifest": "TEST_M01_manifest",
+      "scScormUid": "TEST_M01_scorm"
+    }
+  ]
+}
