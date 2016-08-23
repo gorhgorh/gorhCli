@@ -76,4 +76,5 @@ module.exports = function (vorpal, options) {
     .command(cmdName, cmdMsg)
     .alias('d')
     .action(cmdAction)
+    .hidden()
 }

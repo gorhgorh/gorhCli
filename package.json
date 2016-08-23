@@ -1,6 +1,6 @@
 {
   "name": "gorhcli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "bin": {
     "gorh": "./index.js",
-    "ys": "./index.js"
+    "yes": "./index.js"
   },
   "homepage": "https://github.com/gorhgorh/gorhCli#readme",
   "dependencies": {

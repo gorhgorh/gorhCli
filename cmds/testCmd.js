@@ -59,6 +59,7 @@ function Cmd (vorpal, cliConf) {
       }
       cb()
     })
+    .hidden()
 }
 
 module.exports = {Cmd}

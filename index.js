@@ -116,7 +116,9 @@ vorpal
     }
     callback()
   })
+  .hidden()
 
+// command to build, make manifests and zips all the dirs in the rc file
 vorpal
   .command('make')
   .description('builds, make manifests, zips all the dirs ')
