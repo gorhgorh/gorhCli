@@ -167,6 +167,7 @@ function checkDirs (dirs, pth) {
  * @returns {object} contain 2 key existingArr and missingArr
  */
 function filterExistingDirs (dirs, pth) {
+  if (!pth) pth = ''
   debug(blue('checking exisiting dirs'))
   let existingArr = []
   let missingArr = []
@@ -387,6 +388,20 @@ function buildCourse (courseInfo, self) {
   debug(green('course built:'), courseName)
 }
 
+function makePromtChoices (dirPathArr) {
+  const dirPO = {}
+  const dirPA = []
+
+  _.each(dirPathArr, function (val) {
+    const keyName = val.split('/').pop()
+    console.log(keyName, val)
+    dirPO[keyName] = val
+    dirPA.push(keyName)
+  })
+
+  return {dirPO, dirPA}
+}
+
 module.exports = {
   checkFileExistsSync,
   clearDir,
@@ -400,5 +415,7 @@ module.exports = {
   isDirSymlink,
   buildCourseList,
   buildCourse,
-  listDirs
+  listDirs,
+  filterExistingDirs,
+  makePromtChoices
 }

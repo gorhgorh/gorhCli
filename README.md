@@ -27,17 +27,20 @@ invocation
 
 ### commandes
 
-- ```init``` initialiser le répertoire (git, npm, editorconfig)
-- ```rc``` crer le fichier yesrc.cson (voir plus bas)
-- ```manifest``` crer les fichier imsManifest.xml (utilse les infos du yesrc)
 - ```clear``` effacer le contenu du répertoire
-
+- ```rc``` crer le fichier .gorhclirc.cson (voir plus bas)
+- ```init``` initialiser le répertoire (git, npm, editorconfig)
+- ```build``` build tout les cours du .gorhclirc
+- ```manifest``` crer les fichier imsManifest.xml (utilse les infos du .gorhclirc)
+- ```zip``` zip les repertoires du build
+- ```make``` initialiser le répertoire (git, npm, editorconfig)
+- ```switch``` enchaine build, manifest et zip
 
 ## Configuration
 ### .gorhClirc
 
 le fichier .gorhClirc est un fichier qui a pour but a terme de contenir toutes les informations dont les outils de build on besoins. 
-Il est mainteant en Json, ou peux ete en init
+Il est mainteant en Json, ou peut aussi utiliser le standard ini.
 
 le fichier de configuration est utilisé pour les projet autour d'adapt, et assument une certaine hierarchie et un workflow.
 
@@ -58,24 +61,18 @@ pour le moment sont implémentés :
 
 ## to do
 
-- add zip command
-- add reorder command
-- add translation command
-  - make the translation system modular
-  - make entry in the yesrc
-- add sftp uploads (rsync ?) command
-- use getDirsInfos fn in manifest
-- add build command
-- 
-
-- create an init function for the cli
-  - load rc if there is one
-    - check that all rc courses dirs exist
-- modularise all commands
-- switch to promises ?
-- write test for all function
-- learn how to test commands
-
-## done
+- [ ] add reorder command
+- [ ] add translation command
+  - [ ] make the translation system modular
+  - [ ] make entry in the .gorhclirc
+- [ ] add sftp uploads (rsync ?)
+- [ ] switch to promises ?
+- [ ] write test for all function
 - [x] make/read config file in folder
-- [x] define and use yesrc.cson
+- [x] define and use .gorhclirc.cson
+- [x] add build command
+- [x] add zip
+- [x] modularise all commands
+- [x] create an init function for the cli
+  - [x] load rc if there is one
+    - [x] check that all rc courses dirs exist

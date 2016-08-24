@@ -85,7 +85,7 @@ const cliConf = {
 }
 
 // clear cmd
-clearCmd(vorpal, cliConf)
+// clearCmd(vorpal, cliConf)
 
 // create, write, manipulate rc file command
 rcCmd(vorpal, cliConf)
@@ -143,6 +143,7 @@ vorpal
   .delimiter('gorhCLI $')
   .use(zipCmd)
   .use(modCmd)
+  .use(clearCmd)
   .use(switchCmd)
   .show()
   .parse(process.argv)
