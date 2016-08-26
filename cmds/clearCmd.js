@@ -61,6 +61,9 @@ function cmdAction (args, cb) {
             dirPathArr.push(path.join(buildsPath, val))
           })
         }
+      } else {
+        debug(blue('no dir provided, cancel'))
+        // return cb()
       }
     }
     // if clear adapt build option is true
@@ -111,6 +114,7 @@ function cmdAction (args, cb) {
       return cb()
     })
   } else {
+    debug(dirPathArr)
     clearDirs(dirPathArr)
     self.log(green('cleared dirs:') + dirPathArr.join('\n'))
     return cb()
@@ -127,5 +131,5 @@ module.exports = function (vorpal, options) {
     .option('-l, --list', 'list of dirs')
     .option('-a, --all', 'clear cliDir')
     .action(cmdAction)
-    .hidden()
+    // .hidden()
 }
