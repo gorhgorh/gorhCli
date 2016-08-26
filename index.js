@@ -55,8 +55,8 @@ const switchCmd = require('./cmds/switchCmd')
 const modCmd = require('./cmds/modCmd')
 
 // test command
-const test = require('./cmds/testCmd')
-const testCmd = test.Cmd
+// const test = require('./cmds/testCmd')
+// const testCmd = test.Cmd
 
 // caches the path of the dir where the cli have been inited
 const rcFile = '.gorhClirc'
@@ -91,7 +91,7 @@ const cliConf = {
 rcCmd(vorpal, cliConf)
 
 // initialise the repository cmd
-initCmd(vorpal, cliConf)
+// initCmd(vorpal, cliConf)
 
 // create manifests
 manCmd(vorpal, cliConf)
@@ -100,7 +100,7 @@ manCmd(vorpal, cliConf)
 buildCmd(vorpal, cliConf)
 
 // test cmd
-testCmd(vorpal, cliConf)
+// testCmd(vorpal, cliConf)
 
 vorpal
   .command('foo <requiredArg> [optionalArg]')
@@ -141,9 +141,10 @@ vorpal
 
 vorpal
   .delimiter('gorhCLI $')
-  .use(zipCmd)
   .use(modCmd)
   .use(clearCmd)
+  .use(zipCmd)
+  .use(initCmd)
   .use(switchCmd)
   .show()
   .parse(process.argv)

@@ -1,27 +1,36 @@
-/* demo command use this file as a base for new ones */
 'use strict'
+// ✔, ✖
 const cmdName = 'init'
-const cmdMsg = 'initialise the repository'
-const debug = require('debug')('gorhCli:' + cmdName)
-// const path = require('path')
-// const fs = require('fs-extra')
-const _ = require('lodash')
+const cmdNameDesc = cmdName // + ' [dirnames...]'
+const cmdMsg = 'init project'
+const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 const path = require('path')
+const _ = require('lodash')
+// const fs = require('fs-extra')
+const shelljs = require('shelljs')
+const exec = shelljs.exec
+const which = shelljs.which
 
+// const archiver = require('archiver')
+// const async = require('async')
 const chalk = require('chalk')
 const blue = chalk.cyan
 const red = chalk.red
 const green = chalk.green
 const mag = chalk.magenta
 
-const sh = require('../shellCmds')
-const exec = sh.exec
-
 const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
 const checkDeps = utils.checkDeps
+// const filterExistingDirs = utils.filterExistingDirs
+// const makePromtChoices = utils.makePromtChoices
+// const listDirs = utils.listDirs
+// const symCourse = utils.symCourse
 
-const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli']
+const confMan = require('../confMan')
+const getConf = confMan.getConf
+
+const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli', 'adapt.json']
 
 /**
  * check the provided path for files provided as the second arg (array, optional)
@@ -32,39 +41,52 @@ const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli']
  */
 function checkConfFiles (basePath, filesArr) {
   if (!filesArr) filesArr = requiredFiles
-  debug(blue('cheking for project files'), filesArr)
+  debug(blue('cheking for project files in:', basePath))
   const projectFilesArr = []
   _.each(filesArr, function (file) {
     const filePath = path.join(basePath, '/', file)
     if (checkFileExistsSync(filePath) === true) {
+      debug(green('✔'), blue(file, 'found'))
       projectFilesArr.push(file)
     } else {
-      debug(blue('no', file, 'found'))
+      debug(red('✖'), blue(file, 'not found'))
     }
   })
-  debug(projectFilesArr)
   return projectFilesArr
 }
 
-function doInit (initOpts, self) {
-  const initArr = []
-  _.each(initOpts, function (val, key) {
-    if (val === true) initArr.push(key)
+function makeInitCliPrompts (inits) {
+  const prompts = []
+  _.each(inits, function (val, key) {
+    prompts.push({name: key, checked: val})
   })
-  debug(initArr, initOpts)
-  _.each(initArr, function (val) {
+  return prompts
+}
+
+function initTasks (initTasks, self, opts) {
+  debug('initTasks')
+  debug(initTasks)
+
+  _.each(initTasks, function (val) {
     switch (val) {
+      case 'baseFileCopy':
+        self.log(mag('copying base project files'))
+        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
+        break
+      case 'gitInit':
+        if (checkFileExistsSync(path.join(process.cwd()), '.git') !== true) {
+          self.log(mag('initialising git repo'))
+          exec('git init', { silent: true })
+        } else {
+          self.log('git repo already exists')
+        }
+        break
       case 'npmInit':
         self.log(mag('creating default package.json'))
         exec('npm init -y', { silent: true })
         break
-      case 'gitInit':
-        self.log(mag('initialising git repo'))
-        exec('git init', { silent: true })
-        break
-      case 'copyBaseFiles':
-        self.log(mag('copying base project files'))
-        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
+      case 'rcInit':
+        self.log('not yet implemented')
         break
 
       default:
@@ -73,154 +95,160 @@ function doInit (initOpts, self) {
   })
 }
 
-/**
- * init cmd, prompt question to the user and make action depending on these choices
- *
- * @param {any} vorpal
- * @param {any} cliConf
- * @returns {function} vorpal command
- */
-function Cmd (vorpal, cliConf) {
-  // const rcPath = cliConf.rcPath
-  // const conf = cliConf.initConf
-  // const rcFile = cliConf.rcFile
-  const cliDir = cliConf.cliDir
+function confirmPrompt (taskArr, opts, self, cb) {
+  const defaultPrompt = {
+    type: 'confirm',
+    name: 'confirmPrompt',
+    message: 'is it a yes or a no ?',
+    default: true
+  }
+  const mergedOptions = _.defaultsDeep(opts.promptOpts, defaultPrompt)
+  debug(mergedOptions)
 
-  return vorpal
-    .command(cmdName, cmdMsg)
-    .alias('i')
-    .option('-y, --yolo', 'do not check for available cmds')
-    .option('-n, --noPrompts', "use default options, don't show prompts")
-    .action(function (args, cb) {
-      debug(blue(cmdName, 'start'))
-      // set default cmd options
-      const self = this
-      const cmdOpt = {
-        yolo: false,
-        noPrompts: false,
-        initList: {
-          baseFileCopy: false,
-          gitInit: false,
-          npmInit: false,
-          rcInit: false
-        }
-      }
-      // alter default conf depenfing on cmd options
-      if (args.options.yolo === true) cmdOpt.yolo = true
-      else cmdOpt.yolo = false
-      // cmdOpt.yolo = (args.options.yolo) ? true : false
-      if (args.options.noPrompts === true) cmdOpt.noPrompts = true
-      else cmdOpt.noPrompts = false
-      // cmdOpt.noPrompts = (args.options.noPrompts) ? true : false
-
-      /**
-       * propmpts
-       */
-      // get the list of file found on the project root (package.json, .gorhrc, etc)
-      const projectFilesArr = checkConfFiles(cliDir)
-
-      // build prompt list depending on option and file present in the root dir
-      let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
-      const prompts = {}
-      const promptsArrFilter = []
-      const promptArr = []
-      const reqCmds = []
-
-      // prompts objetcts
-      prompts.basePrompt = {
-        type: 'confirm',
-        name: 'copyBaseFiles',
-        default: true,
-        message: 'copy base files ?'
-      }
-      prompts.gitPrompt = {
-        type: 'confirm',
-        name: 'gitInit',
-        default: true,
-        message: 'initialise a git repo ?'
-      }
-      prompts.npmPrompt = {
-        type: 'confirm',
-        name: 'npmInit',
-        default: true,
-        message: 'create a package .json ?'
-      }
-
-      // each files added to the filter array for the prompts
-      _.each(projectFilesArr, function (file, index) {
-        switch (file) {
-          case '.git':
-            debug('.git found')
-            promptsArrFilter.push('gitPrompt')
-            break
-          case 'package.json':
-            debug('package.json found')
-            promptsArrFilter.push('npmPrompt')
-            break
-          case '.editorconfig':
-            debug('.editorconfig found')
-            promptsArrFilter.push('basePrompt')
-            break
-          default:
-            debug('not done yet', file)
-        }
-      })
-      // filter out each item from the tasklist
-      _.each(promptsArrFilter, function (fString) {
-        taskList = taskList.filter(function (val) {
-          if (val !== fString) return true
-        })
-      })
-      // add the remaining task to the prompt arr
-      _.each(taskList, function (val) {
-        promptArr.push(prompts[val])
-      })
-      debug('filtered task list', taskList)
-
-      // if yolo (no check) option is off and noPropt option is false
-      if (cmdOpt.yolo !== true && cmdOpt.noPrompts === false) {
-        // we prompt !!!
-        self.prompt(promptArr, function (result) {
-          // apply prompt results to the conf
-          _.each(result, function (v, k) {
-            cmdOpt.initList[k] = v
-          })
-
-          _.each(cmdOpt.initList, function (val, key) {
-            debug(val, key)
-            switch (key) {
-              case 'gitInit':
-                if (val === true) reqCmds.push('git')
-                break
-              case 'npmInit':
-                if (val === true) reqCmds.push('node')
-                if (val === true) reqCmds.push('npm')
-                break
-              case 'baseFileCopy':
-                if (val === true) reqCmds.push('svn')
-                break
-
-            }
-          })
-          // reqCmds.push('iururu') // test
-          const areDepsOk = checkDeps(reqCmds)
-          if (areDepsOk !== true) {
-            self.log(red('missing command line commands'), areDepsOk)
-            cb()
-          } else {
-            debug(green('all required cmds available'))
-            doInit(cmdOpt.initList, self)
-            cb()
-          }
-        })
-      } else {
-        // if noPropmt option is true
-        if (cmdOpt.noPrompts === true) {
-        }
-        debug('no confirm')
-        cb()
-      }
-    })
+  return self.prompt(mergedOptions, function (result) {
+    debug(result)
+    if (result.initConfirm === true && _.has(opts.promptOpts, 'action')) {
+      self.log(blue('action starting'))
+      opts.promptOpts.action(taskArr, self)
+      cb()
+    } else {
+      self.log(blue('action canceled'))
+      cb()
+    }
+    cb()
+  })
 }
 
-module.exports = Cmd
+function cmdAction (args, cb) {
+  // get the configuration file
+  debug(blue('start init cmd'))
+  const self = this
+  const conf = getConf()
+  const opts = args.options
+
+  // debug(conf)
+
+  const cliDir = process.cwd()
+  // const buildsPath = path.join(cliDir, conf.buildsPath)
+  // const coursePath = path.join(cliDir, conf.coursePath)
+
+  // get the list of file found on the project root (package.json, .gorhrc, etc)
+  const projectFilesArr = checkConfFiles(cliDir)
+  if (projectFilesArr.length > 0) {
+    debug(blue('project file found'))
+    debug(projectFilesArr)
+  }
+
+  const cmdOpt = {
+    noPrompts: false,
+    initList: {
+      baseFileCopy: false,
+      gitInit: true,
+      npmInit: false,
+      // rcInit: true,
+      // adapt: false,
+      standard: false
+    }
+  }
+
+  // alter default conf depenfing on cmd options
+  if (opts.noPrompts === true) cmdOpt.noPrompts = true
+  if (opts.adapt === true) cmdOpt.initList.adapt = true
+  if (opts.standard === true) cmdOpt.initList.standard = true
+
+  // build prompt list depending on option and file present in the root dir
+  let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
+
+  const promptsArrFilter = []
+  const promptArr = []
+  let reqCmds = []
+
+  const prompts = makeInitCliPrompts(cmdOpt.initList)
+
+  // debug('args')
+  // debug(args)
+
+  // debug('cmdOpt')
+  // debug(cmdOpt)
+
+  // if build all option
+  if (opts.all === true) {
+    debug('all')
+  } else {
+    // else if clear all builds
+  }
+  let prompttaskList = []
+  debug(blue('prompts'))
+  debug(prompts)
+  self.prompt({
+    type: 'checkbox',
+    name: 'installOptions',
+    message: 'select the options you want to install',
+    choices: prompts
+  }, function (result) {
+    debug('results', result)
+    taskList = result.installOptions
+
+    _.each(result.installOptions, function (option) {
+      switch (option) {
+        case 'baseFileCopy':
+          reqCmds.push('svn')
+          break
+        case 'gitInit':
+          reqCmds.push('git')
+          break
+        case 'nmpInit':
+          reqCmds.push('npm')
+          reqCmds.push('node')
+          break
+        case 'rcInit':
+          // reqCmds.push('git')
+          break
+        case 'adapt':
+          debug('adapt')
+          // exec('adapt', {shell: '/bin/zsh'})
+          if (!which('adapt')) {
+            debug('Sorry, this script requires adapt')
+          } else {
+            reqCmds.push('adapt')
+          }
+          break
+        case 'standard':
+          reqCmds.push('npm')
+          reqCmds.push('node')
+          break
+
+        default:
+          debug(red('nope', option))
+          break
+      }
+    })
+    reqCmds = _.uniq(reqCmds)
+    const areDepsOk = checkDeps(reqCmds)
+    const confirmInitPromptOpts = {
+      promptOpts: {
+        name: 'initConfirm',
+        message: 'this will install selected options:' + taskList.join(', '),
+        action: initTasks
+      }
+    }
+
+    confirmPrompt(taskList, confirmInitPromptOpts, self, cb)
+    // self.prompt()
+
+  // return cb()
+  })
+// return cb()
+}
+
+module.exports = function (vorpal, options) {
+  vorpal
+    .command(cmdNameDesc, cmdMsg)
+    .alias('i')
+    .option('-a, --all', 'all option on, no prompt')
+    // .option('-d, --adapt', 'initialise an adapt repo')
+    .option('-s, --standard', 'install standard.js')
+    .option('-n, --noPrompts', "use default options, don't show prompts")
+    .action(cmdAction)
+// .hidden()
+}

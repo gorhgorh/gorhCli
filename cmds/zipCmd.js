@@ -16,6 +16,7 @@ const confMan = require('../confMan')
 const getConf = confMan.getConf
 const utils = require('../utils')
 const listDirs = utils.listDirs
+const checkFileExistsSync = utils.checkFileExistsSync
 
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
   debug('zipping:', dirName)
@@ -53,6 +54,11 @@ function zipDirs (args, cb) {
 
   const cliDir = process.cwd()
   const buildsPath = path.join(cliDir, conf.buildsPath)
+
+  if (checkFileExistsSync(buildsPath) === false) {
+    self.log(red('build paths does not exists'))
+    return cb()
+  }
   const archivesPath = path.join(cliDir, '/archives')
   const dirList = listDirs(buildsPath)
   if (dirList.length < 1) {
