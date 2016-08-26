@@ -30,7 +30,7 @@ function cleanRc (conf, keys) {
   _.each(defaultKeys, function (key) {
     delete clConf[key]
   })
-  debug(blue('cleaned conf'))
+  debug(blue('conf cleaned'))
   return clConf
 }
 
@@ -145,7 +145,7 @@ function rcCmd (vorpal, cliConf) {
   const rcFile = cliConf.rcFile
 
   return vorpal
-    .command('create rc', 'create the config file')
+    .command('rc', 'create the config file')
     .alias('rc')
     .alias('r')
     .action(function (args, cb) {
