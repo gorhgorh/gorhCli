@@ -85,8 +85,16 @@ function initTasks (initTasks, self, opts) {
         self.log(mag('creating default package.json'))
         exec('npm init -y', { silent: true })
         break
-      case 'rcInit':
-        self.log('not yet implemented')
+      // case 'rcInit':
+      //   self.log('not yet implemented')
+      //   break
+      case 'adapt':
+        self.log(mag('installing adapt'))
+        exec('adapt create baseAdapt')
+        break
+      case 'standard':
+        self.log(mag('installing standard'))
+        exec('npm install -D standard')
         break
 
       default:
@@ -154,7 +162,10 @@ function cmdAction (args, cb) {
   // alter default conf depenfing on cmd options
   if (opts.noPrompts === true) cmdOpt.noPrompts = true
   if (opts.adapt === true) cmdOpt.initList.adapt = true
-  if (opts.standard === true) cmdOpt.initList.standard = true
+  if (opts.standard === true) {
+    cmdOpt.initList.npmInit = true
+    cmdOpt.initList.standard = true
+  }
 
   // build prompt list depending on option and file present in the root dir
   let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
@@ -210,6 +221,7 @@ function cmdAction (args, cb) {
           if (!which('adapt')) {
             debug('Sorry, this script requires adapt')
           } else {
+            debug(blue('Adapt test pushed'))
             reqCmds.push('adapt')
           }
           break
@@ -225,6 +237,8 @@ function cmdAction (args, cb) {
     })
     reqCmds = _.uniq(reqCmds)
     const areDepsOk = checkDeps(reqCmds)
+    debug('are deps ok ?:', areDepsOk)
+
     const confirmInitPromptOpts = {
       promptOpts: {
         name: 'initConfirm',

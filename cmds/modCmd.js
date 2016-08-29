@@ -1,80 +1,81 @@
 'use strict'
-const cmdName = 'modCmd'
-const cmdMsg = 'base for a vorpal cmd module'
-const debug = require('debug')('gorhCli:' + cmdName)
-const path = require('path')
-const _ = require('lodash')
-const fs = require('fs-extra')
+// ✔, ✖
+const cmdName = 'mod'
+const cmdNameDesc = cmdName // + ' [dirnames...]'
+const cmdMsg = 'modifed rcCmd'
+const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
+// const path = require('path')
+// const _ = require('lodash')
+// // const fs = require('fs-extra')
+// const shelljs = require('shelljs')
+// const exec = shelljs.exec
+// const which = shelljs.which
+
 // const archiver = require('archiver')
 // const async = require('async')
+
 const chalk = require('chalk')
-// const blue = chalk.cyan
-const red = chalk.red
-const green = chalk.green
+const blue = chalk.cyan
+// const red = chalk.red
+// const green = chalk.green
 // const mag = chalk.magenta
 
-const utils = require('../utils')
-const listDirs = utils.listDirs
-const symCourse = utils.symCourse
+// const utils = require('../utils')
+// const checkFileExistsSync = utils.checkFileExistsSync
+// const checkDeps = utils.checkDeps
+// const filterExistingDirs = utils.filterExistingDirs
+// const makePromtChoices = utils.makePromtChoices
+// const listDirs = utils.listDirs
+// const symCourse = utils.symCourse
 
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
+
 function cmdAction (args, cb) {
   // get the configuration file
+  debug(blue('start init cmd'))
   const self = this
   const conf = getConf()
-
-  if (_.has(conf, 'buildsPath') !== true) {
-    self.log(red('no build paths'))
-    return cb()
-  }
-
+  const opts = args.options
   const cliDir = process.cwd()
-  const coursesPath = path.join(cliDir, conf.coursePath)
-  const cPath = path.join(coursesPath, 'course')
-  let dirList = listDirs(coursesPath, /course-/)
-  let symLink
-  if (dirList.length < 1) {
-    self.log(red('no dir in'), coursesPath)
-    return cb()
-  }
-  let isCurrCourse = false
-  try {
-    isCurrCourse = fs.statSync(cPath).isDirectory()
-  } catch (error) {
-    debug(error)
-    return cb()
-  }
-  if (isCurrCourse === true) {
-    const linkPath = fs.realpathSync(cPath)
-    debug('cPath:', linkPath.split('/').pop())
+  debug(cliDir, opts)
+  debug(conf)
+
+  const cmdOpt = {
+    noPrompts: false,
+    initList: {
+      baseFileCopy: false,
+      gitInit: true,
+      npmInit: false,
+      // rcInit: true,
+      // adapt: false,
+      standard: false
+    }
   }
 
-  self.prompt({
-    type: 'list',
-    name: 'symDir',
-    message: 'select the dirs you want manifest for',
-    choices: dirList
-  }, function (result) {
-    symLink = result.symDir
-    debug(symLink, isCurrCourse)
-    symCourse(symLink, 'course', coursesPath)
-    self.log(green('current course changed to:'), symLink)
-    // const manifestInfos = makeManInfoArr(coursesNames, conf.courses)
-    // debug('desto', buildPath)
-    // makeMans(manifestInfos, buildPath, self)
-    // cb()
-  })
+  // alter default conf depenfing on cmd options
+  if (opts.noPrompts === true) cmdOpt.noPrompts = true
+  if (opts.adapt === true) cmdOpt.initList.adapt = true
+  if (opts.standard === true) cmdOpt.initList.standard = true
 
-// debug(conf)
-// cb()
+  // if build all option
+  if (opts.all === true) {
+    debug('all')
+  } else {
+    // else if clear all builds
+  }
+  return cb()
 }
 
 module.exports = function (vorpal, options) {
   vorpal
-    .command(cmdName, cmdMsg)
-    .alias('d')
+    .command(cmdNameDesc, cmdMsg)
+    .alias('t')
+    .option('-a, --all', 'all option on, no prompt')
+    // .option('-d, --adapt', 'initialise an adapt repo')
+    .option('-s, --standard', 'install standard.js')
+    .option('-n, --noPrompts', "use default options, don't show prompts")
     .action(cmdAction)
-    .hidden()
+    // .hidden()
 }

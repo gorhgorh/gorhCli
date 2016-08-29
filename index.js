@@ -35,6 +35,9 @@ const clearCmd = require('./cmds/clearCmd')
 // rc command
 const rcCmd = require('./cmds/rcCmd')
 
+// currCmd command
+const currCmd = require('./cmds/currCmd')
+
 // init command
 const initCmd = require('./cmds/initCmd')
 
@@ -52,7 +55,7 @@ const zipCmd = require('./cmds/zipCmd')
 const switchCmd = require('./cmds/switchCmd')
 
 // build command
-const modCmd = require('./cmds/modCmd')
+// const modCmd = require('./cmds/modCmd')
 
 // test command
 // const test = require('./cmds/testCmd')
@@ -139,9 +142,19 @@ vorpal
   })
   .hidden()
 
+// exit alias
+vorpal
+  .command('exi', 'exit shortcut')
+  .alias('ex')
+  .alias('e')
+  .action(function (args, cb) {
+    debug(blue('bye'))
+  })
+  .hidden()
+
 vorpal
   .delimiter('gorhCLI $')
-  .use(modCmd)
+  .use(currCmd)
   .use(clearCmd)
   .use(zipCmd)
   .use(initCmd)
