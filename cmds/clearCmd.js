@@ -6,6 +6,7 @@ const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 const path = require('path')
 const _ = require('lodash')
 const fs = require('fs-extra')
+const async = require('async')
 // const archiver = require('archiver')
 // const async = require('async')
 const chalk = require('chalk')
@@ -21,11 +22,42 @@ const makePromtChoices = utils.makePromtChoices
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
+const defaultPrompt = {
+  type: 'confirm',
+  name: 'confirmPrompt',
+  message: 'delete everything ?',
+  default: true
+}
+
 function clearDirs (dirsArr) {
   _.each(dirsArr, function (pth) {
     debug('clearing', pth)
     fs.removeSync(pth)
   })
+}
+
+function recRf (dir, cb) {
+  const items = []
+  async.series([
+    function (callback) {
+      fs.walk(dir)
+        .on('data', function (item) {
+          items.push(item.path)
+          debug(item.path)
+        })
+        .on('end', function () {
+          items.shift()
+          callback(null, items)
+        })
+    }
+  ],
+    function (err, results) {
+      _.each(items, function (item, key) {
+        fs.removeSync(item)
+      })
+      debug('serie finished')
+      cb()
+    })
 }
 
 function cmdAction (args, cb) {
@@ -44,9 +76,10 @@ function cmdAction (args, cb) {
 
   debug(blue('get the array of dirs to clear'))
   // if build all option
-  if (opts.all === true) {
+
+  if (args.dirnames.length > 0 && args.dirnames[0] === 'all') {
+    opts.all = true
     debug('all')
-    dirPathArr.push(cliDir)
   } else {
     // else if clear all builds
     if (opts.builds) {
@@ -56,14 +89,14 @@ function cmdAction (args, cb) {
       // else if some courses are specified from cli args
       if (opts.courses === true) {
         debug('courses')
-        if (args.dirnames) {
+        if (args.dirnames.length > 0) {
           _.each(args.dirnames, function (val) {
             dirPathArr.push(path.join(buildsPath, val))
           })
         }
       } else {
         debug(blue('no dir provided, cancel'))
-        // return cb()
+      // return cb()
       }
     }
     // if clear adapt build option is true
@@ -80,7 +113,7 @@ function cmdAction (args, cb) {
   }
   dirPathArr = filteredDirs.existingArr
 
-  if (dirPathArr === false) {
+  if (dirPathArr === false && opts.all !== true) {
     self.log(red('no dir to clear with current args'))
     return cb()
   }
@@ -96,7 +129,7 @@ function cmdAction (args, cb) {
     self.prompt({
       type: 'checkbox',
       name: 'dirList',
-      message: 'select the dirs you want manifest for',
+      message: 'select the dirs you want to clear',
       choices: promtData.dirPA
     }, function (result) {
       const listPathArr = result.dirList
@@ -115,21 +148,64 @@ function cmdAction (args, cb) {
     })
   } else {
     debug(dirPathArr)
-    clearDirs(dirPathArr)
-    self.log(green('cleared dirs:') + dirPathArr.join('\n'))
-    return cb()
+
+    if (opts.all === true) {
+      var items = []
+      if (opts.force === true) {
+        recRf(cliDir, cb)
+      } else {
+        self.prompt(defaultPrompt, function (result) {
+          debug(result)
+          if (result.confirmPrompt === true) {
+            recRf(cliDir, cb)
+          } else {
+            debug(blue('canceled'))
+            cb()
+          }
+          // const dirs = recRf(cliDir)
+          // debug('dirs', dirs)
+        })
+      }
+    } else if (opts.force === true) {
+      clearDirs(dirPathArr)
+      self.log(green('cleared dirs:') + dirPathArr.join('\n'))
+      return cb()
+    } else {
+      self.log(green('dry run:') + dirPathArr.join('\n'))
+      return cb()
+    }
   }
+}
+
+/**
+ *
+ *
+ * @param {array} dirList
+ * @param {function} action
+ * @param {object} self
+ * @param {function} cb
+ * @returns
+ */
+
+function confirmPrompt (dirList, action, self, cb) {
+  return self.prompt(defaultPrompt, function (result) {
+    debug(result)
+    action(cliDir, cb)
+    cb()
+  })
 }
 
 module.exports = function (vorpal, options) {
   vorpal
     .command(cmdNameDesc, cmdMsg)
     .alias('c')
-    .option('-b, --build', 'clear adapt\'s build dir')
+    .autocomplete(['build', 'builds', 'all'])
+    .option('-b, --build', "clear adapt's build dir")
     .option('-s, --builds', 'clear the buildpath from rc')
     .option('-c, --courses', 'clear specified dir in the srcPath from rc')
     .option('-l, --list', 'list of dirs')
     .option('-a, --all', 'clear cliDir')
+    .option('-f, --force', 'no confimation')
     .action(cmdAction)
-    // .hidden()
+// .hidden()
 }
