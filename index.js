@@ -34,6 +34,10 @@ const clearCmd = require('./cmds/clearCmd')
 
 // rc command
 const rcCmd = require('./cmds/rcCmd')
+// const rcCmd = require('./cmds/rcCmd')
+
+// currCmd command (currently in dev cmd)
+const currCmd = require('./cmds/currCmd')
 
 // init command
 const initCmd = require('./cmds/initCmd')
@@ -50,13 +54,6 @@ const zipCmd = require('./cmds/zipCmd')
 
 // build command
 const switchCmd = require('./cmds/switchCmd')
-
-// build command
-const modCmd = require('./cmds/modCmd')
-
-// test command
-const test = require('./cmds/testCmd')
-const testCmd = test.Cmd
 
 // caches the path of the dir where the cli have been inited
 const rcFile = '.gorhClirc'
@@ -85,13 +82,13 @@ const cliConf = {
 }
 
 // clear cmd
-clearCmd(vorpal, cliConf)
+// clearCmd(vorpal, cliConf)
 
 // create, write, manipulate rc file command
-rcCmd(vorpal, cliConf)
+// rcCmd(vorpal, cliConf)
 
 // initialise the repository cmd
-initCmd(vorpal, cliConf)
+// initCmd(vorpal, cliConf)
 
 // create manifests
 manCmd(vorpal, cliConf)
@@ -99,28 +96,10 @@ manCmd(vorpal, cliConf)
 // create manifests
 buildCmd(vorpal, cliConf)
 
-// test cmd
-testCmd(vorpal, cliConf)
-
-vorpal
-  .command('foo <requiredArg> [optionalArg]')
-  .option('-v, --verbose', 'Print foobar instead.')
-  .description('Outputs "bar".')
-  .alias('foosball')
-  .action(function (args, callback) {
-    debug(args)
-    if (args.options.verbose) {
-      this.log('foobar')
-    } else {
-      this.log('bar')
-    }
-    callback()
-  })
-  .hidden()
-
 // command to build, make manifests and zips all the dirs in the rc file
 vorpal
   .command('make')
+  .alias('mk')
   .description('builds, make manifests, zips all the dirs ')
   .action(function (args, callback) {
     vorpal.execSync('b')
@@ -131,7 +110,7 @@ vorpal
 
 // exit alias
 vorpal
-  .command('exi', 'exit shortcut')
+  .command('exit', 'exit shortcut')
   .alias('ex')
   .alias('e')
   .action(function (args, cb) {
@@ -141,8 +120,11 @@ vorpal
 
 vorpal
   .delimiter('gorhCLI $')
+  .use(currCmd)
+  .use(rcCmd)
+  .use(clearCmd)
   .use(zipCmd)
-  .use(modCmd)
+  .use(initCmd)
   .use(switchCmd)
   .show()
   .parse(process.argv)

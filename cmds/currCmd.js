@@ -2,7 +2,7 @@
 // ✔, ✖
 const cmdName = 'mod'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
-const cmdMsg = 'modifed rcCmd'
+const cmdMsg = 'modifed testCmd'
 const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 // const path = require('path')
 // const _ = require('lodash')

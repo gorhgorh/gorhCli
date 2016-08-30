@@ -51,11 +51,11 @@ S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS         S%%%S SSSSS S%%%S SSSSS 
 SSSSSsSSSSS SSSSSsSSSSS SSSSS SSSSS SSSSS SSSSS         SSSSSsSSSSS SSSSSsSS;:' SSSSS
 `,
   `
-   _|_|_|                      _|                      _|_|_|  _|        _|_|_|
- _|          _|_|    _|  _|_|  _|_|_|                _|        _|          _|
- _|  _|_|  _|    _|  _|_|      _|    _|  _|_|_|_|_|  _|        _|          _|
- _|    _|  _|    _|  _|        _|    _|              _|        _|          _|
-   _|_|_|    _|_|    _|        _|    _|                _|_|_|  _|_|_|_|  _|_|_|
+   _|_|_|                      _|                    _|_|_|  _|        _|_|_|
+ _|          _|_|    _|  _|_|  _|_|_|              _|        _|          _|
+ _|  _|_|  _|    _|  _|_|      _|    _|  _|_|_|_|  _|        _|          _|
+ _|    _|  _|    _|  _|        _|    _|            _|        _|          _|
+   _|_|_|    _|_|    _|        _|    _|              _|_|_|  _|_|_|_|  _|_|_|
 `,
   `
      dBBBBb  dBBBBP dBBBBBb    dBP dBP           dBBBP  dBP    dBP
@@ -69,8 +69,8 @@ SSSSSsSSSSS SSSSSsSSSSS SSSSS SSSSS SSSSS SSSSS         SSSSSsSSSSS SSSSSsSS;:' 
 function getMsg () {
   const msgLength = msgs.length
   const randNum = Math.floor(Math.random() * (msgLength - 1))
-  debug('msg, index / lenght:', randNum, '/', msgLength)
-  return msgs[randNum]
+  // debug('msg, index / lenght:', randNum, '/', msgLength)
+  return msgs[randNum] + '\n> all your prompts belongs to us'
 }
 
 module.exports = getMsg

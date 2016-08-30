@@ -1,7 +1,7 @@
 'use strict'
-const cmdName = 'modCmd'
-const cmdMsg = 'base for a vorpal cmd module'
-const debug = require('debug')('gorhCli:' + cmdName)
+const cmdName = 'clear'
+const cmdMsg = 'clean directories'
+const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 const path = require('path')
 const _ = require('lodash')
 const fs = require('fs-extra')

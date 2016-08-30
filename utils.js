@@ -5,8 +5,8 @@ const fs = require('fs-extra')
 const _ = require('lodash')
 const path = require('path')
 const shelljs = require('shelljs')
-const which = shelljs.which
 const exec = shelljs.exec
+const which = shelljs.which
 const ln = shelljs.ln
 const mv = shelljs.mv
 // const sh = require('./shellCmds')
@@ -167,6 +167,7 @@ function checkDirs (dirs, pth) {
  * @returns {object} contain 2 key existingArr and missingArr
  */
 function filterExistingDirs (dirs, pth) {
+  if (!pth) pth = ''
   debug(blue('checking exisiting dirs'))
   let existingArr = []
   let missingArr = []
@@ -291,6 +292,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
         debug(blue('overwrite start'))
         ln('-sf', srcDir, tarDir)
         debug(blue('link created'), srcDir, blue('=>'), tarDir)
+        return true
       // do no overwrite
       } else {
         debug(blue('no overwrite'))
@@ -387,6 +389,20 @@ function buildCourse (courseInfo, self) {
   debug(green('course built:'), courseName)
 }
 
+function makePromtChoices (dirPathArr) {
+  const dirPO = {}
+  const dirPA = []
+
+  _.each(dirPathArr, function (val) {
+    const keyName = val.split('/').pop()
+    console.log(keyName, val)
+    dirPO[keyName] = val
+    dirPA.push(keyName)
+  })
+
+  return {dirPO, dirPA}
+}
+
 module.exports = {
   checkFileExistsSync,
   clearDir,
@@ -400,5 +416,7 @@ module.exports = {
   isDirSymlink,
   buildCourseList,
   buildCourse,
-  listDirs
+  listDirs,
+  filterExistingDirs,
+  makePromtChoices
 }
