@@ -131,7 +131,6 @@ function cmdAction (args, cb) {
   // get the configuration file
   debug(blue('start init cmd'))
   const self = this
-  const conf = getConf()
   const opts = args.options
 
   // debug(conf)
@@ -170,8 +169,6 @@ function cmdAction (args, cb) {
   // build prompt list depending on option and file present in the root dir
   let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
 
-  const promptsArrFilter = []
-  const promptArr = []
   let reqCmds = []
 
   const prompts = makeInitCliPrompts(cmdOpt.initList)
@@ -188,7 +185,6 @@ function cmdAction (args, cb) {
   } else {
     // else if clear all builds
   }
-  let prompttaskList = []
   debug(blue('prompts'))
   debug(prompts)
   self.prompt({

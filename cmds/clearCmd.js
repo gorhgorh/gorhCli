@@ -52,6 +52,7 @@ function recRf (dir, cb) {
     }
   ],
     function (err, results) {
+      if (err) debug(err)
       _.each(items, function (item, key) {
         fs.removeSync(item)
       })
@@ -77,7 +78,7 @@ function cmdAction (args, cb) {
   debug(blue('get the array of dirs to clear'))
   // if build all option
 
-  if (args.dirnames.length > 0 && args.dirnames[0] === 'all') {
+  if (args.dirnames && args.dirnames[0] === 'all') {
     opts.all = true
     debug('all')
   } else {
@@ -89,7 +90,7 @@ function cmdAction (args, cb) {
       // else if some courses are specified from cli args
       if (opts.courses === true) {
         debug('courses')
-        if (args.dirnames.length > 0) {
+        if (args.dirnames && args.dirnames.length > 0) {
           _.each(args.dirnames, function (val) {
             dirPathArr.push(path.join(buildsPath, val))
           })
@@ -150,7 +151,6 @@ function cmdAction (args, cb) {
     debug(dirPathArr)
 
     if (opts.all === true) {
-      var items = []
       if (opts.force === true) {
         recRf(cliDir, cb)
       } else {
@@ -162,8 +162,8 @@ function cmdAction (args, cb) {
             debug(blue('canceled'))
             cb()
           }
-          // const dirs = recRf(cliDir)
-          // debug('dirs', dirs)
+        // const dirs = recRf(cliDir)
+        // debug('dirs', dirs)
         })
       }
     } else if (opts.force === true) {
@@ -175,24 +175,6 @@ function cmdAction (args, cb) {
       return cb()
     }
   }
-}
-
-/**
- *
- *
- * @param {array} dirList
- * @param {function} action
- * @param {object} self
- * @param {function} cb
- * @returns
- */
-
-function confirmPrompt (dirList, action, self, cb) {
-  return self.prompt(defaultPrompt, function (result) {
-    debug(result)
-    action(cliDir, cb)
-    cb()
-  })
 }
 
 module.exports = function (vorpal, options) {
