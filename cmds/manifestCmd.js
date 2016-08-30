@@ -1,7 +1,7 @@
 /* demo command use this file as a base for new ones */
 'use strict'
 const cmdName = 'manifests'
-const cmdMsg = 'default msg'
+const cmdMsg = 'generate scrorm manifests'
 const debug = require('debug')('gorhCli:' + cmdName)
 const path = require('path')
 // const fs = require('fs-extra')
@@ -57,15 +57,23 @@ function Cmd (vorpal, cliConf) {
   const coursesPath = path.join(cliDir, conf.coursePath)
   const buildPath = path.join(cliDir, conf.buildsPath)
 
+  const autoCompleteArr = []
+
+  // prepare autocomplete array
+  _.each(conf.courses, function (course, key) {
+    autoCompleteArr.push(course.name)
+  })
   return vorpal
     .command('manifest', cmdMsg)
     .alias('man')
     .alias('m')
+    .autocomplete(autoCompleteArr)
     // .option('-a, --all', 'make manifest for all courses')
     .option('-s, --single [course]', 'single course, dirname provided as arg')
     .option('-l, --list', 'select a list of dirs')
     .option('-c, --check', 'dry run, checks if the dir in the conf are available')
     .action(function (args, cb) {
+      debug(red('Manifest initial pwd', process.cwd()))
       const self = this
       let coursesNames = []
       let areCoursesThere
@@ -74,6 +82,10 @@ function Cmd (vorpal, cliConf) {
 
       if (_.has(args.options, 'single') === true) {
         debug('-s option action')
+        if (typeof (args.options.single) === 'boolean') {
+          debug(red('you should provide a dirname as -s arg'))
+          cb()
+        }
         coursesNames.push(args.options.single)
       // } else if (_.has(args.options, 'list') === true) {
       } else {
