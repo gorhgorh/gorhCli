@@ -13,6 +13,10 @@ const blue = chalk.cyan
 // const green = chalk.green
 // const mag = chalk.magenta
 
+const sh = require('shelljs')
+const exec = sh.exec
+const which = sh.which
+
 const utils = require('../utils')
 const getDirsInfo = utils.getDirsInfo
 const buildCourseList = utils.buildCourseList
@@ -58,10 +62,16 @@ function Cmd (vorpal, cliConf) {
           }, function (result) {
             dirsInfos.fList.existingArr = result.chosenList
             buildCourseList(dirsInfos, self)
+            if (which('say')) {
+              exec('say builds done, yo')
+            }
             return cb()
           })
         } else {
           buildCourseList(dirsInfos, self)
+          if (which('say')) {
+            exec('say builds done, yo')
+          }
           return cb()
         }
       } else {

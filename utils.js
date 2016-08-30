@@ -381,7 +381,7 @@ function buildCourse (courseInfo, self) {
     return false
   }
   debug(blue('grunt ran for', courseInfo.courseName))
-  const mvPath = path.join(buildPath, courseName)
+  const mvPath = path.join(buildPath, courseName + '-build')
   const buildSrcPath = path.join(buildPath, '../build')
 
   mv(buildSrcPath, mvPath)
