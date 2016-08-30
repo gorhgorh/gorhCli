@@ -73,7 +73,6 @@ function Cmd (vorpal, cliConf) {
     .option('-l, --list', 'select a list of dirs')
     .option('-c, --check', 'dry run, checks if the dir in the conf are available')
     .action(function (args, cb) {
-      debug(red('Manifest initial pwd', process.cwd()))
       const self = this
       let coursesNames = []
       let areCoursesThere
