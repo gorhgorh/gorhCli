@@ -61,6 +61,8 @@ pour le moment sont implémentés :
 
 ## to do
 
+- [ ] fix path issues
+  - [ ] get root dir from config (where the .rcfile is located)
 - [ ] add reorder command
 - [ ] add translation command
   - [ ] make the translation system modular
@@ -73,6 +75,15 @@ pour le moment sont implémentés :
 - [x] add build command
 - [x] add zip
 - [x] modularise all commands
+  - [] buildCmd
+  - [x] clearCmd
 - [x] create an init function for the cli
   - [x] load rc if there is one
     - [x] check that all rc courses dirs exist
+    
+
+## SUGAR
+
+- update start message
+  - read pkg and diplay info in the message
+  - make it a vorpal extention

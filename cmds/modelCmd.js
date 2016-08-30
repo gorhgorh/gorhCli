@@ -31,7 +31,6 @@ const blue = chalk.cyan
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
-
 function cmdAction (args, cb) {
   // get the configuration file
   debug(blue('start init cmd'))
