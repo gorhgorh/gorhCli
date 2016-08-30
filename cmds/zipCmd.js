@@ -52,12 +52,26 @@ function zipDirs (args, cb) {
     return cb()
   }
 
-  const cliDir = process.cwd()
+
+  let cliDir = process.cwd()
+  // TODO : investigate for reason of the bad cwd in make cmd
+  if (cliDir === path.join(process.cwd(),'../', conf.coursePath)) {
+    debug(red('make'))
+    cliDir = path.join(process.cwd(),'../')
+  }
   const buildsPath = path.join(cliDir, conf.buildsPath)
 
   if (checkFileExistsSync(buildsPath) === false) {
-    self.log(red('build paths does not exists'))
-    return cb()
+    self.log(red('build paths does not exists', buildsPath))
+    let testPath = path.join(buildsPath, '../../', conf.buildsPath)
+    debug('testPath',testPath, checkFileExistsSync(testPath))
+    if (checkFileExistsSync(testPath) === true){
+      buildsPath = testPath
+
+    } else {
+      self.log(red('build paths does not exists', buildsPath))
+      return cb()
+    }
   }
   const archivesPath = path.join(cliDir, '/archives')
   const dirList = listDirs(buildsPath)

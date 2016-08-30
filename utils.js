@@ -292,6 +292,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
         debug(blue('overwrite start'))
         ln('-sf', srcDir, tarDir)
         debug(blue('link created'), srcDir, blue('=>'), tarDir)
+        return true
       // do no overwrite
       } else {
         debug(blue('no overwrite'))

@@ -1,14 +1,13 @@
 'use strict'
 const cmdName = 'switch'
+const cmdNameDesc = cmdName + ' [folda]'
 const cmdMsg = 'change symlink of the course folder'
 const debug = require('debug')('gorhCli:' + cmdName)
 const path = require('path')
 const _ = require('lodash')
 const fs = require('fs-extra')
-// const archiver = require('archiver')
-// const async = require('async')
 const chalk = require('chalk')
-// const blue = chalk.cyan
+const blue = chalk.cyan
 const red = chalk.red
 const green = chalk.green
 // const mag = chalk.magenta
@@ -20,8 +19,14 @@ const symCourse = utils.symCourse
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
+const iConf = getConf()
+const cliDir = process.cwd()
+
+const coursesPath = path.join(cliDir, iConf.coursePath)
+const cPath = path.join(coursesPath, '/course')
+let dirList = listDirs(coursesPath, /course-/)
+
 function cmdAction (args, cb) {
-  debug(args)
   // get the configuration file
   const self = this
   const conf = getConf()
@@ -31,10 +36,10 @@ function cmdAction (args, cb) {
     return cb()
   }
 
-  const cliDir = process.cwd()
-  const coursesPath = path.join(cliDir, conf.coursePath)
-  const cPath = path.join(coursesPath, 'course')
-  let dirList = listDirs(coursesPath, /course-/)
+  // const cliDir = process.cwd()
+  // const coursesPath = path.join(cliDir, conf.coursePath)
+  // const cPath = path.join(coursesPath, 'course')
+  // let dirList = listDirs(coursesPath, /course-/)
   let symLink
   if (dirList.length < 1) {
     self.log(red('no dir in'), coursesPath)
@@ -51,26 +56,35 @@ function cmdAction (args, cb) {
     const linkPath = fs.realpathSync(cPath)
     debug('cPath:', linkPath.split('/').pop())
   }
+  debug(args.folda)
+  if (_.has(args, 'folda') !== true) {
+    self.prompt({
+      type: 'list',
+      name: 'symDir',
+      message: 'select the dir you to use as course',
+      choices: dirList
+    }, function (result) {
+      symLink = result.symDir
+      debug(symLink, isCurrCourse)
+      symCourse(symLink, 'course', coursesPath)
+      self.log(green('current course changed to:'), symLink)
 
-  self.prompt({
-    type: 'list',
-    name: 'symDir',
-    message: 'select the dir you to use as course',
-    choices: dirList
-  }, function (result) {
-    symLink = result.symDir
-    debug(symLink, isCurrCourse)
-    symCourse(symLink, 'course', coursesPath)
-    self.log(green('current course changed to:'), symLink)
+    })
+  } else {
+    debug(blue('target course'), args.folda )
 
-    cb()
-  })
+    if (symCourse(args.folda, 'course', coursesPath, cb) === true) {
+      self.log(blue('switched to', args.folda))
+    } else {
+      cb()
+    }
+  }
 }
 
 module.exports = function (vorpal, options) {
   vorpal
-    .command(cmdName, cmdMsg)
+    .command(cmdNameDesc, cmdMsg)
     .alias('sw')
-    .option('-v, --verbosity [level]', 'Sets verbosity level.')
+    .autocomplete(dirList)
     .action(cmdAction)
 }

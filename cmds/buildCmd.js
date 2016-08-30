@@ -3,13 +3,12 @@
 const cmdName = 'buildCmd'
 const cmdMsg = 'builds adapt courses'
 const debug = require('debug')('gorhCli:' + cmdName)
-// const path = require('path')
-// const fs = require('fs-extra')
+const path = require('path')
+const fs = require('fs-extra')
 // const _ = require('lodash')
 
 const chalk = require('chalk')
 const blue = chalk.cyan
-// const red = chalk.red
 // const green = chalk.green
 // const mag = chalk.magenta
 
@@ -23,23 +22,27 @@ const buildCourseList = utils.buildCourseList
 // const checkFileExistsSync = utils.checkFileExistsSync
 
 function Cmd (vorpal, cliConf) {
-  // const rcPath = cliConf.rcPath
   const conf = cliConf.initConf
-  // const rcFile = cliConf.rcFile
   const cliDir = cliConf.cliDir
-  // const coursesPath = path.join(cliDir, conf.coursePath)
-  // const buildPath = path.join(cliDir, conf.buildsPath)
 
   return vorpal
     .command('build', cmdMsg)
     .alias('b')
     .option('-l, --list', 'select a list of dirs')
+    .option('-c, --clear', 'clear the builds directory beforehand')
     .action(function (args, cb) {
       const self = this
+      const opts = args.options
       debug(blue(cmdName, 'start'))
-      // const opt = {
-      //   prompt: false
-      // }
+      debug(opts)
+      // if -c flag clear the builds dir
+      if (opts.clear === true) {
+        debug(blue('cleaning build dir'))
+        fs.removeSync(path.join(cliDir, '/builds'))
+      }
+
+      // clean the build dir
+      fs.removeSync('./build')
 
       const dirsInfos = getDirsInfo(conf, cliDir)
       if (getDirsInfo === false) {
@@ -51,7 +54,7 @@ function Cmd (vorpal, cliConf) {
 
       // TODO treat list case
       if (dirsInfos !== false) {
-        if (args.options.list === true) {
+        if (opts.list === true) {
           let coursesNames = dirsInfos.fList.existingArr
           debug(blue('list option'), args.options)
           self.prompt({
