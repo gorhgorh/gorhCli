@@ -1,5 +1,4 @@
 'use strict'
-// ✔, ✖
 const cmdName = 'init'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
 const cmdMsg = 'init project'
@@ -10,9 +9,8 @@ const _ = require('lodash')
 const shelljs = require('shelljs')
 const exec = shelljs.exec
 const which = shelljs.which
+const sed = shelljs.sed
 
-// const archiver = require('archiver')
-// const async = require('async')
 const chalk = require('chalk')
 const blue = chalk.cyan
 const red = chalk.red
@@ -22,10 +20,6 @@ const mag = chalk.magenta
 const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
 const checkDeps = utils.checkDeps
-// const filterExistingDirs = utils.filterExistingDirs
-// const makePromtChoices = utils.makePromtChoices
-// const listDirs = utils.listDirs
-// const symCourse = utils.symCourse
 
 const confMan = require('../confMan')
 const getConf = confMan.getConf
@@ -55,6 +49,12 @@ function checkConfFiles (basePath, filesArr) {
   return projectFilesArr
 }
 
+/**
+ * create an array of the provided inits obj
+ *
+ * @param {obj} inits object resulting from the prompt (result)
+ * @returns {array}
+ */
 function makeInitCliPrompts (inits) {
   const prompts = []
   _.each(inits, function (val, key) {
@@ -63,12 +63,12 @@ function makeInitCliPrompts (inits) {
   return prompts
 }
 
-function initTasks (initTasks, self, opts) {
-  debug('initTasks')
-  debug(initTasks)
+function initTasks (initTasksArr, self, cb) {
+  debug('initTasksArr')
+  debug(initTasksArr)
 
-  _.each(initTasks, function (val) {
-    switch (val) {
+  _.each(initTasksArr, function (task) {
+    switch (task) {
       case 'baseFileCopy':
         self.log(mag('copying base project files'))
         exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
@@ -95,12 +95,19 @@ function initTasks (initTasks, self, opts) {
       case 'standard':
         self.log(mag('installing standard'))
         exec('npm install -D standard')
+        sed('-i', 'echo.*1', 'standard', 'package.json')
+
+        break
+      case 'nodeToolBelt':
+        self.log(mag('installing standard'))
+        exec('npm install -S lodash fs-extra debug')
         break
 
       default:
         break
     }
   })
+  if (cb) cb()
 }
 
 function confirmPrompt (taskArr, opts, self, cb) {
@@ -118,12 +125,12 @@ function confirmPrompt (taskArr, opts, self, cb) {
     if (result.initConfirm === true && _.has(opts.promptOpts, 'action')) {
       self.log(blue('action starting'))
       opts.promptOpts.action(taskArr, self)
-      cb()
+    // cb()
     } else {
       self.log(blue('action canceled'))
       cb()
     }
-    cb()
+  // cb()
   })
 }
 
@@ -147,108 +154,107 @@ function cmdAction (args, cb) {
   }
 
   const cmdOpt = {
-    noPrompts: false,
+    force: false,
     initList: {
       baseFileCopy: false,
       gitInit: true,
       npmInit: false,
       // rcInit: true,
       // adapt: false,
+      nodeToolBelt: false,
       standard: false
     }
   }
 
   // alter default conf depenfing on cmd options
-  if (opts.noPrompts === true) cmdOpt.noPrompts = true
+  if (opts.force === true) cmdOpt.force = true
   if (opts.adapt === true) cmdOpt.initList.adapt = true
+  if (opts.nodeToolBelt === true) cmdOpt.initList.nodeToolBelt = true
   if (opts.standard === true) {
     cmdOpt.initList.npmInit = true
     cmdOpt.initList.standard = true
   }
 
   // build prompt list depending on option and file present in the root dir
-  let taskList = ['basePrompt', 'gitPrompt', 'npmPrompt'] // basePrompt first
-
-  let reqCmds = []
-
-  const prompts = makeInitCliPrompts(cmdOpt.initList)
-
-  // debug('args')
-  // debug(args)
-
-  // debug('cmdOpt')
-  // debug(cmdOpt)
-
-  // if build all option
-  if (opts.all === true) {
-    debug('all')
+  let taskList = ['baseFileCopy', 'gitInit', 'npmInit', 'standard'] // basePrompt first
+  if (opts.force === true) {
+    initTasks(taskList, self)
   } else {
-    // else if clear all builds
-  }
-  debug(blue('prompts'))
-  debug(prompts)
-  self.prompt({
-    type: 'checkbox',
-    name: 'installOptions',
-    message: 'select the options you want to install',
-    choices: prompts
-  }, function (result) {
-    debug('results', result)
-    taskList = result.installOptions
+    let reqCmds = []
 
-    _.each(result.installOptions, function (option) {
-      switch (option) {
-        case 'baseFileCopy':
-          reqCmds.push('svn')
-          break
-        case 'gitInit':
-          reqCmds.push('git')
-          break
-        case 'nmpInit':
-          reqCmds.push('npm')
-          reqCmds.push('node')
-          break
-        case 'rcInit':
-          // reqCmds.push('git')
-          break
-        case 'adapt':
-          debug('adapt')
-          // exec('adapt', {shell: '/bin/zsh'})
-          if (!which('adapt')) {
-            debug('Sorry, this script requires adapt')
-          } else {
-            debug(blue('Adapt test pushed'))
-            reqCmds.push('adapt')
-          }
-          break
-        case 'standard':
-          reqCmds.push('npm')
-          reqCmds.push('node')
-          break
+    const prompts = makeInitCliPrompts(cmdOpt.initList)
 
-        default:
-          debug(red('nope', option))
-          break
-      }
-    })
-    reqCmds = _.uniq(reqCmds)
-    const areDepsOk = checkDeps(reqCmds)
-    debug('are deps ok ?:', areDepsOk)
-
-    const confirmInitPromptOpts = {
-      promptOpts: {
-        name: 'initConfirm',
-        message: 'this will install selected options:' + taskList.join(', '),
-        action: initTasks
-      }
+    // if build all option
+    if (opts.all === true) {
+      debug('all')
+    } else {
+      // else if clear all builds
     }
+    debug(blue('prompts'))
+    debug(prompts)
+    self.prompt({
+      type: 'checkbox',
+      name: 'installOptions',
+      message: 'select the options you want to install',
+      choices: prompts
+    }, function (result) {
+      debug('results', result)
+      taskList = result.installOptions
 
-    confirmPrompt(taskList, confirmInitPromptOpts, self, cb)
-    // self.prompt()
+      _.each(taskList, function (option) {
+        switch (option) {
+          case 'baseFileCopy':
+            reqCmds.push('svn')
+            break
+          case 'gitInit':
+            reqCmds.push('git')
+            break
+          case 'nmpInit':
+            reqCmds.push('npm')
+            reqCmds.push('node')
+            break
+          case 'rcInit':
+            // reqCmds.push('git')
+            break
+          case 'adapt':
+            debug('adapt')
+            // exec('adapt', {shell: '/bin/zsh'})
+            if (!which('adapt')) {
+              debug('Sorry, this script requires adapt')
+            } else {
+              debug(blue('Adapt test pushed'))
+              reqCmds.push('adapt')
+            }
+            break
 
+          default:
+            debug(red('node', option))
+            reqCmds.push('npm')
+            reqCmds.push('node')
+            break
+        }
+      })
+      reqCmds = _.uniq(reqCmds)
+      reqCmds.push('pokok')
+
+      const areDepsOk = checkDeps(reqCmds)
+      debug('are deps ok ?:', areDepsOk)
+
+      const confirmInitPromptOpts = {
+        promptOpts: {
+          name: 'initConfirm',
+          message: 'this will install selected options:' + taskList.join(', '),
+          action: initTasks
+        }
+      }
+
+      confirmPrompt(taskList, confirmInitPromptOpts, self, cb)
+      // self.prompt()
+
+    // return cb()
+    })
   // return cb()
-  })
-// return cb()
+  }
 }
 
 module.exports = function (vorpal, options) {
@@ -258,7 +264,8 @@ module.exports = function (vorpal, options) {
     .option('-a, --all', 'all option on, no prompt')
     // .option('-d, --adapt', 'initialise an adapt repo')
     .option('-s, --standard', 'install standard.js')
-    .option('-n, --noPrompts', "use default options, don't show prompts")
+    .option('-n, --nodeToolBelt', 'install nodeToolBelt (lodash, fs-extra, debug)')
+    .option('-f, --force', "use default options, don't show prompts")
     .action(cmdAction)
 // .hidden()
 }
