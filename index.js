@@ -110,7 +110,7 @@ vorpal
 
 // exit alias
 vorpal
-  .command('exit', 'exit shortcut')
+  .command('exi', 'exit shortcut')
   .alias('ex')
   .alias('e')
   .action(function (args, cb) {
