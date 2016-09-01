@@ -66,7 +66,7 @@ function makeInitCliPrompts (inits) {
 function initTasks (initTasksArr, self, cb) {
   debug('initTasksArr')
   debug(initTasksArr)
-
+  let gitC = false
   _.each(initTasksArr, function (task) {
     switch (task) {
       case 'baseFileCopy':
@@ -74,7 +74,13 @@ function initTasks (initTasksArr, self, cb) {
         exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
         break
       case 'gitInit':
+        debug(red('----------'))
+        debug(red('----------'))
+        debug(process.cwd(), checkFileExistsSync(path.join(process.cwd()), '.git')  )
+        debug(red('----------'))
+        debug(red('----------'))
         if (checkFileExistsSync(path.join(process.cwd()), '.git') !== true) {
+          gitC = true
           self.log(mag('initialising git repo'))
           exec('git init', { silent: true })
         } else {
@@ -107,6 +113,12 @@ function initTasks (initTasksArr, self, cb) {
         break
     }
   })
+
+  if (gitC === true) {
+    self.log(mag('initCommit'))
+    exec('git add . && git commit -m "init commit"')
+  }
+
   if (cb) cb()
 }
 
@@ -234,9 +246,8 @@ function cmdAction (args, cb) {
             break
         }
       })
-      reqCmds = _.uniq(reqCmds)
-      reqCmds.push('pokok')
 
+      reqCmds = _.uniq(reqCmds)
       const areDepsOk = checkDeps(reqCmds)
       debug('are deps ok ?:', areDepsOk)
 
@@ -247,13 +258,8 @@ function cmdAction (args, cb) {
           action: initTasks
         }
       }
-
       confirmPrompt(taskList, confirmInitPromptOpts, self, cb)
-      // self.prompt()
-
-    // return cb()
     })
-  // return cb()
   }
 }
 
@@ -261,11 +267,10 @@ module.exports = function (vorpal, options) {
   vorpal
     .command(cmdNameDesc, cmdMsg)
     .alias('i')
-    .option('-a, --all', 'all option on, no prompt')
     // .option('-d, --adapt', 'initialise an adapt repo')
+    .option('-f, --force', "use default options, don't show prompts")
     .option('-s, --standard', 'install standard.js')
     .option('-n, --nodeToolBelt', 'install nodeToolBelt (lodash, fs-extra, debug)')
-    .option('-f, --force', "use default options, don't show prompts")
     .action(cmdAction)
 // .hidden()
 }
