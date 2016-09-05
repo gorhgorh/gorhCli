@@ -88,6 +88,7 @@ function writeConf (conf, rcPath, self, cb) {
   const cleanedConf = cleanRc(conf)
   debug(rcPath)
   ++cleanedConf.confVersion
+  cleanedConf.defaultConf = false
   fs.writeJson(rcPath, cleanedConf, function () {
     debug(blue('conf written'))
     if (self) self.log(blue('conf written'))
@@ -142,8 +143,7 @@ module.exports = function (vorpal, options) {
     .command(cmdNameDesc, cmdMsg)
     .alias('r')
     .option('-c, --check', 'check if in memory configurations matches file conf')
-    // .option('-d, --adapt', 'initialise an adapt repo')
-    .option('-s, --standard', 'install standard.js')
+    // .option('-w, --write', 'write conf')
     .option('-n, --noPrompts', "use default options, don't show prompts")
     .action(cmdAction)
     // .hidden()
