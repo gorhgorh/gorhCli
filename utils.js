@@ -318,6 +318,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
  * @returns {array}
  */
 function listDirs (dirsPath, regex) {
+  if (checkFileExistsSync(dirsPath) !== true) return false
   return fs.readdirSync(dirsPath).filter(function (file) {
     // debug(file)
     // debug('file', file, 'reg', regex, 'match', file.match(regex))

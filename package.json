@@ -41,5 +41,10 @@
     "standard": "^7.1.2",
     "tap-nyan": "0.0.2",
     "tape": "^4.6.0"
+  },
+  "standard": {
+    "ignore": [
+      "sandbox"
+    ]
   }
 }
