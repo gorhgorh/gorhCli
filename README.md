@@ -62,8 +62,8 @@ pour le moment sont implémentés :
 
 ## to do
 
-- [ ] fix path issues
-  - [ ] get root dir from config (where the .rcfile is located)
+- [x] fix path issues
+  - [x] get root dir from config (where the .rcfile is located) (made for swCmd)
 - [ ] add reorder command
 - [ ] add translation command
   - [ ] make the translation system modular
