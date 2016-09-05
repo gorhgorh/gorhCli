@@ -21,9 +21,7 @@ expériences aves vorpaljs pour faire une cli et automatiser certains workflows 
 - ```npm install -g ./```
 - ```npm link```
 
-### invocation
-
-```gorh```
+tapper ```gorh``` (mais pas trop fort)
 
 ### commandes
 
@@ -80,8 +78,7 @@ pour le moment sont implémentés :
   - [x] clearCmd
 - [x] create an init function for the cli
   - [x] load rc if there is one
-    - [x] check that all rc courses dirs exist
-    
+  - [x] check that all rc courses dirs exist
 
 ## SUGAR
 
