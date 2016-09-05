@@ -378,7 +378,7 @@ function buildCourse (courseInfo, self) {
   symCourse(courseName, 'course', srcPath)
 
   self.log(blue('Start buildCourse'), courseInfo.courseName)
-  if (exec('grunt build', {silent: true}).code !== 0) {
+  if (exec('grunt build').code !== 0) {
     debug(red('Error: grunt cmd failed'))
     return false
   }
