@@ -404,6 +404,28 @@ function makePromtChoices (dirPathArr) {
   return {dirPO, dirPA}
 }
 
+function getRootDir (conf) {
+  if (conf.defaultConf !== false) {
+    debug(red('default conf, can\'t find the root dir'))
+    return false
+  }
+  const configs = conf.configs
+  const cliRootDir = path.dirname(configs[configs.length - 1])
+  return cliRootDir
+}
+
+function goToRootDir (conf) {
+  const curP = path.join(process.cwd())
+  debug('curP', curP)
+  const rootD = getRootDir(conf)
+  if (rootD === false) return false
+  debug('is it root Dir', rootD === curP)
+  if (rootD !== curP) {
+    process.chdir(rootD)
+    debug('switched dir to', rootD, process.cwd())
+  }
+}
+
 module.exports = {
   checkFileExistsSync,
   clearDir,
@@ -419,5 +441,7 @@ module.exports = {
   buildCourse,
   listDirs,
   filterExistingDirs,
-  makePromtChoices
+  makePromtChoices,
+  goToRootDir,
+  getRootDir
 }
