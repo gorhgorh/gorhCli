@@ -23,6 +23,8 @@ const iConf = getConf()
 const cliDir = process.cwd()
 
 const coursesPath = path.join(cliDir, iConf.coursePath)
+
+debug(coursesPath, cliDir)
 const cPath = path.join(coursesPath, '/course')
 let dirList = listDirs(coursesPath, /course-/)
 
@@ -49,7 +51,7 @@ function cmdAction (args, cb) {
   try {
     isCurrCourse = fs.statSync(cPath).isDirectory()
   } catch (error) {
-    debug(error)
+    self.log('path does not exists :', cPath, 'verify that you are on the home folder')
     return cb()
   }
   if (isCurrCourse === true) {
@@ -68,10 +70,9 @@ function cmdAction (args, cb) {
       debug(symLink, isCurrCourse)
       symCourse(symLink, 'course', coursesPath)
       self.log(green('current course changed to:'), symLink)
-
     })
   } else {
-    debug(blue('target course'), args.folda )
+    debug(blue('target course'), args.folda)
 
     if (symCourse(args.folda, 'course', coursesPath, cb) === true) {
       self.log(blue('switched to', args.folda))
