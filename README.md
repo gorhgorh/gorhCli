@@ -21,7 +21,7 @@ expériences aves vorpaljs pour faire une cli et automatiser certains workflows 
 - ```npm install -g ./```
 - ```npm link```
 
-invocation
+### invocation
 
 ```gorh```
 
@@ -37,6 +37,7 @@ invocation
 - ```switch``` enchaine build, manifest et zip
 
 ## Configuration
+
 ### .gorhClirc
 
 le fichier .gorhClirc est un fichier qui a pour but a terme de contenir toutes les informations dont les outils de build on besoins. 
@@ -61,8 +62,8 @@ pour le moment sont implémentés :
 
 ## to do
 
-- [ ] fix path issues
-  - [ ] get root dir from config (where the .rcfile is located)
+- [x] fix path issues
+  - [x] get root dir from config (where the .rcfile is located) (made for swCmd)
 - [ ] add reorder command
 - [ ] add translation command
   - [ ] make the translation system modular

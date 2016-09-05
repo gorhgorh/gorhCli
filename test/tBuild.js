@@ -9,7 +9,6 @@ var path = require('path')
 
 debug('testing', testName)
 
-// const cmd = require('../cmds/build')
 // const sym = cmd.symCourse
 
 const cliPath = __dirname
