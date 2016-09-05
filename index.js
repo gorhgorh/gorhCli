@@ -26,7 +26,6 @@ const sh = require('./shellCmds')
 // const exec = sh.exec
 const gCliDir = sh.getCliPath // return current cliPath
 
-// const builder = require('./cmds/build')
 // const buildAction = builder.buildAction
 
 // clear command

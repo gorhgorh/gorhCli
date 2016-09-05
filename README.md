@@ -21,7 +21,7 @@ expériences aves vorpaljs pour faire une cli et automatiser certains workflows 
 - ```npm install -g ./```
 - ```npm link```
 
-invocation
+### invocation
 
 ```gorh```
 
@@ -37,6 +37,7 @@ invocation
 - ```switch``` enchaine build, manifest et zip
 
 ## Configuration
+
 ### .gorhClirc
 
 le fichier .gorhClirc est un fichier qui a pour but a terme de contenir toutes les informations dont les outils de build on besoins. 
