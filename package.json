@@ -1,7 +1,7 @@
 {
   "name": "gorhcli",
-  "version": "0.4.0",
-  "description": "",
+  "version": "0.5.0",
+  "description": "cli for working on adapt-learning course with multiple courses",
   "main": "index.js",
   "scripts": {
     "test": "standard && faucet test/*"
