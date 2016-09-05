@@ -318,6 +318,7 @@ function symCourse (srcDir, tarDir, srcPath, overwrite) {
  * @returns {array}
  */
 function listDirs (dirsPath, regex) {
+  if (checkFileExistsSync(dirsPath) !== true) return false
   return fs.readdirSync(dirsPath).filter(function (file) {
     // debug(file)
     // debug('file', file, 'reg', regex, 'match', file.match(regex))
@@ -377,12 +378,12 @@ function buildCourse (courseInfo, self) {
   symCourse(courseName, 'course', srcPath)
 
   self.log(blue('Start buildCourse'), courseInfo.courseName)
-  if (exec('grunt build', {silent: true}).code !== 0) {
+  if (exec('grunt build').code !== 0) {
     debug(red('Error: grunt cmd failed'))
     return false
   }
   debug(blue('grunt ran for', courseInfo.courseName))
-  const mvPath = path.join(buildPath, courseName)
+  const mvPath = path.join(buildPath, courseName + '-build')
   const buildSrcPath = path.join(buildPath, '../build')
 
   mv(buildSrcPath, mvPath)
@@ -403,6 +404,28 @@ function makePromtChoices (dirPathArr) {
   return {dirPO, dirPA}
 }
 
+function getRootDir (conf) {
+  if (conf.defaultConf !== false) {
+    debug(red('default conf, can\'t find the root dir'))
+    return false
+  }
+  const configs = conf.configs
+  const cliRootDir = path.dirname(configs[configs.length - 1])
+  return cliRootDir
+}
+
+function goToRootDir (conf) {
+  const curP = path.join(process.cwd())
+  debug('curP', curP)
+  const rootD = getRootDir(conf)
+  if (rootD === false) return false
+  debug('is it root Dir', rootD === curP)
+  if (rootD !== curP) {
+    process.chdir(rootD)
+    debug('switched dir to', rootD, process.cwd())
+  }
+}
+
 module.exports = {
   checkFileExistsSync,
   clearDir,
@@ -418,5 +441,7 @@ module.exports = {
   buildCourse,
   listDirs,
   filterExistingDirs,
-  makePromtChoices
+  makePromtChoices,
+  goToRootDir,
+  getRootDir
 }

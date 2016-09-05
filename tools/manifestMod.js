@@ -34,7 +34,7 @@ function makeMans (courses, dest, self) {
  * @param {object} self vorpal object, mainly for logs
  */
 function makeManifest (data, key, dest, self) {
-  const dirPath = path.join(dest, key)
+  const dirPath = path.join(dest, key + '-build')
   fs.ensureDirSync(dirPath)
   fs.writeFileSync(dirPath + '/imsmanifest.xml', cmpTmpl(data))
   self.log(green('done writing'), dirPath + '/imsmanifest.xml')

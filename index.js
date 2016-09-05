@@ -108,9 +108,19 @@ vorpal
     callback()
   })
 
+// lazy shorthand
+vorpal
+  .command('hello')
+  .alias('hi')
+  .alias('ii')
+  .description('init with style')
+  .action(function (args, callback) {
+    vorpal.execSync('i -f')
+  })
+
 // exit alias
 vorpal
-  .command('exit', 'exit shortcut')
+  .command('exi', 'exit shortcut')
   .alias('ex')
   .alias('e')
   .action(function (args, cb) {

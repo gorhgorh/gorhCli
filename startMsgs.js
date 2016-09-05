@@ -1,4 +1,3 @@
-const debug = require('debug')('gorhCli:startMsg')
 const msgs = [
   `
  _____         _       _____ __    _____
