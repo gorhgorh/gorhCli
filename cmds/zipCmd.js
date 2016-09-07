@@ -22,13 +22,15 @@ const checkFileExistsSync = utils.checkFileExistsSync
  *
  *
  * @param {string} dirName name of the dir to zip
- * @param {string} tarPath path to w<rite the arcive to
+ * @param {string} tarPath path to write the archive to
  * @param {string} buildsPath path to dir containing the dir to zip
  * @param {obj} self vorpal obj
  * @param {function} cb func
  */
 
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
+
+  debug('cwd:', process.cwd())
   debug('zipping:', dirName)
   const archive = archiver('zip')
   const output = fs.createWriteStream(path.join(tarPath, dirName + '.zip'))
@@ -52,6 +54,16 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
   archive.finalize()
 }
 
+
+
+/**
+ * zip directories
+ *
+ * @param {object} args from the cli
+ * @param {function} cb vorpal cb
+ * @returns {function} cb vorpal cb || true
+ */
+
 function zipDirs (args, cb) {
   // get the configuration file
   const self = this
@@ -65,7 +77,7 @@ function zipDirs (args, cb) {
     }
     debug('io', checkFileExistsSync(zPath))
     zipDir(opts.dir, process.cwd(), process.cwd(), self)
-    return
+    return true
   }
 
 
