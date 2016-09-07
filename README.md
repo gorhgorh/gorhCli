@@ -60,6 +60,7 @@ pour le moment sont implémentés :
 
 ## to do
 
+- [] use rcconfig in vorpal il all cmds
 - [x] fix path issues
   - [x] get root dir from config (where the .rcfile is located) (made for swCmd)
 - [ ] add reorder command

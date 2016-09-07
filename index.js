@@ -12,6 +12,8 @@ const blue = chalk.cyan
 const green = chalk.green
 // const mag = chalk.magenta
 
+const cliInit = require('./cliInit')
+
 const startMsg = require('./startMsgs')
 
 console.log(green(startMsg()))
@@ -22,9 +24,7 @@ const utils = require('./utils')
 const checkFileExistsSync = utils.checkFileExistsSync
 // const clearDir = utils.clearDir
 
-const sh = require('./shellCmds')
-// const exec = sh.exec
-const gCliDir = sh.getCliPath // return current cliPath
+
 
 // const buildAction = builder.buildAction
 
@@ -54,31 +54,12 @@ const zipCmd = require('./cmds/zipCmd')
 // build command
 const switchCmd = require('./cmds/switchCmd')
 
-// caches the path of the dir where the cli have been inited
-const rcFile = '.gorhClirc'
-const cliDir = gCliDir()
-const rcPath = path.join(cliDir, '/', rcFile)
+// get the conf and init the cli
+const cliConf = cliInit()
 
-// check for a user config file
-const hasUserConfig = checkFileExistsSync(path.join(os.homedir(), '/', rcFile))
-debug(blue('hasUserConfig:', hasUserConfig))
-
-const confMan = require('./confMan')
-const getConf = confMan.getConf
-// const compConf = confMan.compareConf
-debug(blue('getting init config'))
-let conf = getConf()
-debug(green('got init config, v:'), conf.confVersion)
-// let confIsLoaded = false
-
-const cliConf = {
-  confIsLoaded: false,
-  cliDir,
-  rcFile,
-  rcPath,
-  hasUserConfig,
-  initConf: conf
-}
+// debug(cliConf)
+vorpal.iConf = cliConf
+// debug(vorpal.iConf)
 
 // create manifests
 manCmd(vorpal, cliConf)

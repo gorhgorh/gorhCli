@@ -339,7 +339,7 @@ function listDirs (dirsPath, regex) {
 }
 
 function buildCourseList (dirsInfos, self) {
-  debug(red('start buildCourseList'), dirsInfos)
+  debug(blue('start buildCourseList'), dirsInfos)
   debug(dirsInfos)
   if (dirsInfos.fList.existingArr === false) {
     debug('no matching dir to build un src folder')
