@@ -80,15 +80,6 @@ const cliConf = {
   initConf: conf
 }
 
-// clear cmd
-// clearCmd(vorpal, cliConf)
-
-// create, write, manipulate rc file command
-// rcCmd(vorpal, cliConf)
-
-// initialise the repository cmd
-// initCmd(vorpal, cliConf)
-
 // create manifests
 manCmd(vorpal, cliConf)
 
