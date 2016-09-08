@@ -18,7 +18,19 @@ const utils = require('../utils')
 const listDirs = utils.listDirs
 const checkFileExistsSync = utils.checkFileExistsSync
 
+/**
+ *
+ *
+ * @param {string} dirName name of the dir to zip
+ * @param {string} tarPath path to write the archive to
+ * @param {string} buildsPath path to dir containing the dir to zip
+ * @param {obj} self vorpal obj
+ * @param {function} cb func
+ */
+
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
+
+  debug('cwd:', process.cwd())
   debug('zipping:', dirName)
   const archive = archiver('zip')
   const output = fs.createWriteStream(path.join(tarPath, dirName + '.zip'))
@@ -42,11 +54,34 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
   archive.finalize()
 }
 
+
+
+/**
+ * zip directories
+ *
+ * @param {object} args from the cli
+ * @param {function} cb vorpal cb
+ * @returns {function} cb vorpal cb || true
+ */
+
 function zipDirs (args, cb) {
   // get the configuration file
   const self = this
-  const conf = getConf()
+  const opts = args.options
+  debug(opts)
+  if (_.has(opts, 'dir') === true) {
+    const zPath = path.join(process.cwd(), opts.dir)
+    if (checkFileExistsSync(zPath) !== true) {
+      self.log('dir does not exists', zPath)
+      return cb()
+    }
+    debug('io', checkFileExistsSync(zPath))
+    zipDir(opts.dir, process.cwd(), process.cwd(), self)
+    return true
+  }
 
+
+  const conf = getConf()
   if (_.has(conf, 'buildsPath') !== true) {
     self.log(red('no build paths'))
     return cb()
@@ -91,5 +126,6 @@ module.exports = function (vorpal, options) {
   vorpal
     .command(cmdName, cmdMsg)
     .alias('z')
+    .option('-d, --dir <dir>', 'scorm dir to zip.')
     .action(zipDirs)
 }
