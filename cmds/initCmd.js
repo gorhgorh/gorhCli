@@ -71,7 +71,7 @@ function initTasks (initTasksArr, self, cb) {
     switch (task) {
       case 'baseFileCopy':
         self.log(mag('copying base project files'))
-        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force', { silent: true })
+        exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force')
         break
       case 'gitInit':
         debug(red('----------'))
@@ -82,14 +82,14 @@ function initTasks (initTasksArr, self, cb) {
         if (checkFileExistsSync(path.join(process.cwd()), '.git') !== true) {
           gitC = true
           self.log(mag('initialising git repo'))
-          exec('git init', { silent: true })
+          exec('git init')
         } else {
           self.log('git repo already exists')
         }
         break
       case 'npmInit':
         self.log(mag('creating default package.json'))
-        exec('npm init -y', { silent: true })
+        exec('npm init -y')
         break
       // case 'rcInit':
       //   self.log('not yet implemented')
@@ -179,7 +179,12 @@ function cmdAction (args, cb) {
   }
 
   // alter default conf depenfing on cmd options
-  if (opts.force === true) cmdOpt.force = true
+  if (opts.force === true) {
+    cmdOpt.force = true
+    cmdOpt.npmInit = true
+    cmdOpt.nodeToolBelt = true
+    cmdOpt.standard = true
+  }
   if (opts.adapt === true) cmdOpt.initList.adapt = true
   if (opts.nodeToolBelt === true) cmdOpt.initList.nodeToolBelt = true
   if (opts.standard === true) {
