@@ -24,8 +24,6 @@ const utils = require('./utils')
 const checkFileExistsSync = utils.checkFileExistsSync
 // const clearDir = utils.clearDir
 
-
-
 // const buildAction = builder.buildAction
 
 // clear command

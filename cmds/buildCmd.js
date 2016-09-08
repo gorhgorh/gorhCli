@@ -5,6 +5,7 @@ const cmdMsg = 'builds adapt courses'
 const debug = require('debug')('gorhCli:' + cmdName)
 const path = require('path')
 const fs = require('fs-extra')
+
 // const _ = require('lodash')
 
 const chalk = require('chalk')
@@ -21,15 +22,29 @@ const getDirsInfo = utils.getDirsInfo
 const buildCourseList = utils.buildCourseList
 // const checkFileExistsSync = utils.checkFileExistsSync
 
+
+
+function yo (msg, self) {
+  var sayStr = 'say ' + msg + ', yoo !'
+  if (which('say')) {
+    exec(sayStr)
+  }
+  self.log(msg + ', yooo')
+}
+
+
+
 function Cmd (vorpal, cliConf) {
   const conf = cliConf.initConf
-  const cliDir = cliConf.cliDir
+  debug(cliConf)
+  const cliDir = cliConf.rcPath
 
   return vorpal
     .command('build', cmdMsg)
     .alias('b')
     .option('-l, --list', 'select a list of dirs')
     .option('-c, --clear', 'clear the builds directory beforehand')
+    .option('-y, --yo', 'yooo mode ! (hearphones needed)')
     .action(function (args, cb) {
       const self = this
       const opts = args.options
@@ -63,26 +78,26 @@ function Cmd (vorpal, cliConf) {
             message: 'select the dirs you want to build',
             choices: coursesNames
           }, function (result) {
+            if (result.chosenList.length < 1) {
+              self.log('no dir selected')
+              return cb()
+            }
             dirsInfos.fList.existingArr = result.chosenList
             buildCourseList(dirsInfos, self)
-            if (which('say')) {
-              exec('say builds done, yo')
-            }
-            return cb()
+            if (opts.yo === true) yo('builds done', self)
+            // return cb()
           })
         } else {
           buildCourseList(dirsInfos, self)
-          if (which('say')) {
-            exec('say builds done, yo')
-          }
-          return cb()
+          if (opts.yo === true) yo('builds done', self)
+          // return cb()
         }
       } else {
         debug('dirsinfo = false')
         self.log('no available dir to build')
+        cb()
       }
 
-      cb()
     })
 }
 
