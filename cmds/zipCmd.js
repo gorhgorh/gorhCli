@@ -59,13 +59,13 @@ function zipDirs (args, cb) {
     debug(red('make'))
     cliDir = path.join(process.cwd(),'../')
   }
-  const buildsPath = path.join(cliDir, conf.buildsPath)
+  let buildsPath = path.join(cliDir, conf.buildsPath)
 
   if (checkFileExistsSync(buildsPath) === false) {
     self.log(red('build paths does not exists', buildsPath))
     let testPath = path.join(buildsPath, '../../', conf.buildsPath)
-    debug('testPath',testPath, checkFileExistsSync(testPath))
-    if (checkFileExistsSync(testPath) === true){
+    debug('testPath', testPath, checkFileExistsSync(testPath))
+    if (checkFileExistsSync(testPath) === true) {
       buildsPath = testPath
 
     } else {
