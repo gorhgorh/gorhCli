@@ -29,6 +29,7 @@
     "fs-extra": "^0.30.0",
     "is-equal": "^1.5.3",
     "lodash": "^4.15.0",
+    "msexcel-builder": "github:chuanyi/msexcel-builder",
     "rc": "^1.1.6",
     "shelljs": "^0.7.3",
     "strip-json-comments": "^2.0.1",
