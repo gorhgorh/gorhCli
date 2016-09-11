@@ -9,6 +9,7 @@ const path = require('path')
 const fs = require('fs-extra')
 
 const trad = require('adapt-node-transaltion')
+const makeXlx = require('../tools/makeGaXlsx')
 
 // const shelljs = require('shelljs')
 // const exec = shelljs.exec
@@ -71,6 +72,7 @@ function extractTrad (courseName, conf) {
   })
 
   fs.writeJsonSync(path.join(trP, 'tradData.json'), tArr)
+  makeXlx(tArr, trP)
 }
 
 function treatFile (file, tArr) {

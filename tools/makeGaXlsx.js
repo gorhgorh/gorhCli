@@ -25,29 +25,36 @@ function prepareData (data) {
     const entryText = entry[entryName]
     entryArr.push(entryName)
     entryArr.push(entryText)
-    // debug(entryArr)
+    // debug(entryArr) ;
     return entryArr
   })
   // debug(data.length)
   return dataArr
 }
 
-function createWorkBook (initData, header) {
+/**
+ * create a workbook from a translation array and writes it down
+ *
+ * @param {Array} initData tranlation array
+ * @param {String} pth a path to write the xlsx to
+ * @param {Array} header an array containing the header's titles
+ */
+function createWorkBook (initData, pth,  header) {
   if (!header) header = defHeader
   // Create a new workbook file in current working-path
-  const data = [header, ...initData]
+  const data = [header, ...prepareData(initData)]
   const maxRow = data.length
   const maxCell = data[0].length
-  var workbook = excelbuilder.createWorkbook('./', 'sample.xlsx')
+  var workbook = excelbuilder.createWorkbook(pth, 'tradGa.xlsx')
 
   // Create a new worksheet with 10 columns and 12 rows
-  var sheet1 = workbook.createSheet('sheet1', maxCell, maxRow)
+  var sheet1 = workbook.createSheet('adapt-text', maxCell, maxRow)
 
   data.forEach(function(entry, i) {
     entry.forEach(function(data, dI) {
       sheet1.set(dI + 1, i + 1, data)
       if (dI === 1) {
-        debug(data)
+        // debug(data)
         sheet1.set(dI + 1, i + 1, data)
 
       }
@@ -55,12 +62,6 @@ function createWorkBook (initData, header) {
 
   }, this);
 
-  // // Fill some data
-  //
-  // for (var i = 2; i < 5; i++)
-  //   sheet1.set(i, 1, 'test' + i)
-
-  // // Save it
   workbook.save(function (err) {
     if (err)
       throw err
@@ -68,7 +69,8 @@ function createWorkBook (initData, header) {
       debug('congratulations, your workbook created')
   })
 }
-createWorkBook(prepareData(testData))
+// createWorkBook(testData, './')
 
+module.exports = createWorkBook
 
 // debug(testData)
