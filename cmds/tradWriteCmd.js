@@ -8,7 +8,6 @@ const _ = require('lodash')
 const path = require('path')
 const fs = require('fs-extra')
 
-const trad = require('adapt-node-transaltion')
 const wrTrad = require('../tools/writeTrad')
 const makeTrO = wrTrad.makeTrO
 const replaceFile = wrTrad.replaceFile
@@ -36,10 +35,7 @@ function writeTrad (courseName, conf, self) {
     return false
   }
 
-  const tradObj = makeTrO(fs.readJsonSync(path.join(srcP, 'tradData.json'))
-)
-
-  // debug(tradObj)
+  const tradObj = makeTrO(fs.readJsonSync(path.join(srcP, 'tradData.json')))
 
   const fileNames = [
     'config.json',
@@ -67,8 +63,6 @@ function writeTrad (courseName, conf, self) {
     debug(entry)
     return entry
   })
-
-  const tArr = []
 
   _.each(files, function (file) {
     self.log(blue('starting', file.type))

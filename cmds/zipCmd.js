@@ -29,7 +29,6 @@ const checkFileExistsSync = utils.checkFileExistsSync
  */
 
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
-
   debug('cwd:', process.cwd())
   debug('zipping:', dirName)
   const archive = archiver('zip')
@@ -53,8 +52,6 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
 
   archive.finalize()
 }
-
-
 
 /**
  * zip directories
@@ -80,13 +77,11 @@ function zipDirs (args, cb) {
     return true
   }
 
-
   const conf = getConf()
   if (_.has(conf, 'buildsPath') !== true) {
     self.log(red('no build paths'))
     return cb()
   }
-
 
   let cliDir = process.cwd()
   // TODO : investigate for reason of the bad cwd in make cmd
@@ -102,7 +97,6 @@ function zipDirs (args, cb) {
     debug('testPath', testPath, checkFileExistsSync(testPath))
     if (checkFileExistsSync(testPath) === true) {
       buildsPath = testPath
-
     } else {
       self.log(red('build paths does not exists', buildsPath))
       return cb()

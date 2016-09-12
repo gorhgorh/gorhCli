@@ -21,9 +21,6 @@ const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
 const checkDeps = utils.checkDeps
 
-const confMan = require('../confMan')
-const getConf = confMan.getConf
-
 const requiredFiles = ['.git', 'package.json', '.editorconfig', '.gorhCli', 'adapt.json']
 
 /**

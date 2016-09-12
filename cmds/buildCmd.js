@@ -6,12 +6,8 @@ const debug = require('debug')('gorhCli:' + cmdName)
 const path = require('path')
 const fs = require('fs-extra')
 
-// const _ = require('lodash')
-
 const chalk = require('chalk')
 const blue = chalk.cyan
-// const green = chalk.green
-// const mag = chalk.magenta
 
 const sh = require('shelljs')
 const exec = sh.exec
@@ -22,8 +18,6 @@ const getDirsInfo = utils.getDirsInfo
 const buildCourseList = utils.buildCourseList
 // const checkFileExistsSync = utils.checkFileExistsSync
 
-
-
 function yo (msg, self) {
   var sayStr = 'say ' + msg + ', yoo !'
   if (which('say')) {
@@ -31,8 +25,6 @@ function yo (msg, self) {
   }
   self.log(msg + ', yooo')
 }
-
-
 
 function Cmd (vorpal, cliConf) {
   const conf = cliConf.initConf
@@ -96,7 +88,6 @@ function Cmd (vorpal, cliConf) {
         self.log('no available dir to build')
         cb()
       }
-
     })
 }
 
