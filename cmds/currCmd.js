@@ -33,7 +33,7 @@ const getConf = confMan.getConf
 
 function cmdAction (args, cb) {
   // get the configuration file
-  debug(blue('start init cmd'))
+  self.log(blue('starting', cmdName))
   const self = this
   const conf = getConf()
   const opts = args.options

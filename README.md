@@ -31,8 +31,10 @@ tapper ```gorh``` (mais pas trop fort)
 - ```build``` build tout les cours du .gorhclirc
 - ```manifest``` crer les fichier imsManifest.xml (utilse les infos du .gorhclirc)
 - ```zip``` zip les repertoires du build
-- ```make``` initialiser le répertoire (git, npm, editorconfig)
-- ```switch``` enchaine build, manifest et zip
+- ```make``` build, créée les manifests, zipe
+- ```switch``` permet de créer les liens symboliques pour les cours
+- ```trad extract``` extrait les chaines de caractere a traduire d'un cours adapt
+
 
 ## Configuration
 
@@ -50,7 +52,9 @@ la configuration est chargé en utilisant le module [rc](https://github.com/domi
 pour le moment sont implémentés :
 
 - coursePath : chemin vers le dossier src a partir de la racine du projet
-- buildsPath : chemin vers le dossier ou les builds sont réunis (pour les manifestes)
+- buildsPath : chemin vers le dossier ou les builds sont réunis apres le buikd les manifestes sont crée ici
+- tradFolder : chemin vers le dossier ou les fichier de traduction sont générés
+- tradOutFolder : chemin vers le dossier ou json traduits seront générés
 - version: si non spécifié, la version courrante de la cli sera utilisée
 - courses : un array d'objets contenant les infos des divers cours pour les fichier multicours
   - name : nom du cours, DOIS etre le nom du répertoire correspondant dans /src

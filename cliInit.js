@@ -63,6 +63,8 @@ function cliInit () {
       debug('chdir: ' + err)
     }
   }
+  debug(blue('Initial config\n'))
+  debug(cliConf)
   return cliConf
 }
 

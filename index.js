@@ -2,15 +2,10 @@
 'use strict'
 /* global */
 const debug = require('debug')('gorhCli:CLI')
-const path = require('path')
-// const _ = require('lodash')
-const os = require('os')
 
 const chalk = require('chalk')
-// const red = chalk.red
 const blue = chalk.cyan
 const green = chalk.green
-// const mag = chalk.magenta
 
 const cliInit = require('./cliInit')
 
@@ -22,22 +17,21 @@ const vorpal = require('vorpal')()
 
 const utils = require('./utils')
 const checkFileExistsSync = utils.checkFileExistsSync
-// const clearDir = utils.clearDir
-
-// const buildAction = builder.buildAction
 
 // clear command
 const clearCmd = require('./cmds/clearCmd')
 
 // rc command
 const rcCmd = require('./cmds/rcCmd')
-// const rcCmd = require('./cmds/rcCmd')
 
 // currCmd command (currently in dev cmd)
 const currCmd = require('./cmds/currCmd')
 
 // tradExtract command
-const tradExtract = require('./cmds/tradExtract')
+const tradExtract = require('./cmds/tradExtractCmd')
+
+// tradExtract command
+const tradWrite = require('./cmds/tradWriteCmd')
 
 // init command
 const initCmd = require('./cmds/initCmd')
@@ -104,6 +98,7 @@ vorpal
   .delimiter('gorhCLI $')
   .use(currCmd)
   .use(tradExtract)
+  .use(tradWrite)
   .use(rcCmd)
   .use(clearCmd)
   .use(zipCmd)

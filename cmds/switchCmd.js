@@ -50,7 +50,7 @@ function cmdAction (args, cb) {
     isCurrCourse = fs.statSync(cPath).isDirectory()
   } catch (error) {
     // debug(iConf)
-    if(_.has(conf, 'config') === true){
+    if (_.has(conf, 'config') === true) {
       debug(conf.config)
       cliDir = path.dirname(conf.config)
       debug(blue('switch cwd to:'), cliDir)
@@ -63,11 +63,11 @@ function cmdAction (args, cb) {
   }
   if (isCurrCourse === true) {
     debug(blue('course is a dir'))
-    if (isDirSymlink(cPath) !== true ) {
-      self.log('target',cPath, 'is not a symlink, canceling')
+    if (isDirSymlink(cPath) !== true) {
+      self.log('target', cPath, 'is not a symlink, canceling')
       return cb()
     }
-    debug('is it a symlink ?',isDirSymlink(cPath))
+    debug('is it a symlink ?', isDirSymlink(cPath))
   }
 
   dirList = listDirs(coursesPath, /course-/)

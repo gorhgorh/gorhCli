@@ -1,5 +1,4 @@
 'use strict'
-// ✔, ✖
 const cmdName = 'rc'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
 const cmdMsg = 'create the config file'
@@ -8,32 +7,19 @@ const path = require('path')
 const _ = require('lodash')
 const wne = require('is-equal/why')
 const fs = require('fs-extra')
-const sjc = require('strip-json-comments')
-// const shelljs = require('shelljs')
-// const exec = shelljs.exec
-// const which = shelljs.which
-
-// const archiver = require('archiver')
-// const async = require('async')
+// const sjc = require('strip-json-comments')
 
 const chalk = require('chalk')
 const blue = chalk.cyan
-const red = chalk.red
-// const green = chalk.green
-// const mag = chalk.magenta
 
 const utils = require('../utils')
 const checkFileExistsSync = utils.checkFileExistsSync
-// const checkDeps = utils.checkDeps
-// const filterExistingDirs = utils.filterExistingDirs
-// const makePromtChoices = utils.makePromtChoices
-// const listDirs = utils.listDirs
-// const symCourse = utils.symCourse
 
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
 const defaultKeys = ['_', 'configs', 'config']
+
 /**
  * clean a config object from rc specific keys
  * if a keys array is provided, arr entries will be cleared too
