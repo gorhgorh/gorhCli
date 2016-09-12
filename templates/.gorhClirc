@@ -4,6 +4,7 @@
   "coursePath": "src",
   "buildsPath": "builds",
   "defaultConf": true,
+  "tradFolder": "translations",
   "courses": [
     {
       "name" : "course-01",

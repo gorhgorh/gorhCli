@@ -53,7 +53,6 @@ function Cmd (vorpal, cliConf) {
   // const rcPath = cliConf.rcPath
   const conf = cliConf.initConf
   // const rcFile = cliConf.rcFile
-  debug(cliConf)
   const cliDir = cliConf.rcPath
   const coursesPath = path.join(cliDir, conf.coursePath)
   const buildPath = path.join(cliDir, conf.buildsPath)

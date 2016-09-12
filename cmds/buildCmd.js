@@ -36,7 +36,6 @@ function yo (msg, self) {
 
 function Cmd (vorpal, cliConf) {
   const conf = cliConf.initConf
-  debug(cliConf)
   const cliDir = cliConf.rcPath
 
   return vorpal

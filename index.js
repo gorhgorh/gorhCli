@@ -36,6 +36,9 @@ const rcCmd = require('./cmds/rcCmd')
 // currCmd command (currently in dev cmd)
 const currCmd = require('./cmds/currCmd')
 
+// tradExtract command
+const tradExtract = require('./cmds/tradExtract')
+
 // init command
 const initCmd = require('./cmds/initCmd')
 
@@ -100,6 +103,7 @@ vorpal
 vorpal
   .delimiter('gorhCLI $')
   .use(currCmd)
+  .use(tradExtract)
   .use(rcCmd)
   .use(clearCmd)
   .use(zipCmd)

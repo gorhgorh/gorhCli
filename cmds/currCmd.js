@@ -2,7 +2,7 @@
 // ✔, ✖
 const cmdName = 'mod'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
-const cmdMsg = 'modifed testCmd'
+const cmdMsg = 'modifed rcCmd'
 const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 // const path = require('path')
 // const _ = require('lodash')
@@ -33,13 +33,13 @@ const getConf = confMan.getConf
 
 function cmdAction (args, cb) {
   // get the configuration file
-  debug(blue('start modified cmd'))
+  debug(blue('start init cmd'))
   const self = this
   const conf = getConf()
   const opts = args.options
   const cliDir = process.cwd()
-  // debug(cliDir, opts)
-  // debug(conf)
+  debug(cliDir, opts)
+  debug(conf)
 
   const cmdOpt = {
     noPrompts: false,
@@ -52,7 +52,7 @@ function cmdAction (args, cb) {
       standard: false
     }
   }
-  debug(self.parent.iConf)
+
   // alter default conf depenfing on cmd options
   if (opts.noPrompts === true) cmdOpt.noPrompts = true
   if (opts.adapt === true) cmdOpt.initList.adapt = true
