@@ -1,7 +1,7 @@
 'use strict'
 const cmdName = 'trad extract'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
-const cmdMsg = 'modifed testCmd'
+const cmdMsg = 'extract fields to translate for courses'
 const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 
 const _ = require('lodash')
@@ -21,7 +21,7 @@ const makeXlx = require('../tools/makeGaXlsx')
 const chalk = require('chalk')
 const blue = chalk.cyan
 const red = chalk.red
-// const green = chalk.green
+const green = chalk.green
 // const mag = chalk.magenta
 
 const utils = require('../utils')
@@ -38,8 +38,8 @@ const getConf = confMan.getConf
 function extractTrad (courseName, conf) {
   const trDir = conf.initConf.tradFolder || 'trads'
 
-  const srcP = path.join(conf.cliDir, conf.initConf.coursePath, courseName)
-  const trP = path.join(conf.cliDir, trDir, courseName)
+  const srcP = path.join(conf.rcPath, conf.initConf.coursePath, courseName)
+  const trP = path.join(conf.rcPath, trDir, courseName)
 
   const fileNames = [
     'config.json',
@@ -53,7 +53,11 @@ function extractTrad (courseName, conf) {
     debug(file, blue('exists', isFileExists))
     return checkFileExistsSync(path.join(srcP, file))
   })
-
+  if (fileNames.length < 1) {
+    debug(red('no file to translate, return'))
+    // self.log(blue('no file to translate'))
+    return false
+  }
   fs.ensureDirSync(path.join(trP, 'en'))
 
   const files = fileNames.map(function (fName) {
@@ -78,31 +82,30 @@ function extractTrad (courseName, conf) {
 function treatFile (file, tArr) {
   const fileData = fs.readJsonSync(file.fPath)
   let modObj
-  debug(file)
   switch (file.type) {
     case 'config':
-      debug(blue('config'))
+      debug(blue('treating: config'))
       modObj = trad.transConf(fileData, tArr)
       fs.writeJsonSync(file.tPath, modObj.o)
       break
     case 'course':
-      debug(blue('course'))
+      debug(blue('treating: course'))
       fs.writeJsonSync(file.tPath, trad.transCourse(fileData, tArr))
       break
     case 'contentObjects':
-      debug(blue('contentObjects'))
+      debug(blue('treating: contentObjects'))
       fs.writeJsonSync(file.tPath, trad.transPage(fileData, tArr))
       break
     case 'articles':
-      debug(blue('contentObjects'))
+      debug(blue('treating: contentObjects'))
       fs.writeJsonSync(file.tPath, trad.transArt(fileData, tArr))
       break
     case 'blocks':
-      debug(blue('blocks no action (yet)'))
+      debug(blue('treating: blocks, no action (yet)'))
       // fs.writeJsonSync(file.tPath, trad.transPage(fileData, tArr))
       break
     case 'components':
-      debug(blue('components'))
+      debug(blue('treating: components'))
       fs.writeJsonSync(file.tPath, trad.transComps(fileData, tArr))
       break
     default:
@@ -120,12 +123,12 @@ function cmdAction (args, cb) {
   if (opts.all === true) cmdOpt.all = true
 
   // get the configuration file
-  debug(blue('start modified cmd'))
+  debug(blue('start extraction cmd'))
   const self = this
   const conf = self.parent.iConf || getConf()
   self.log(blue('start translation extraction'))
 
-  const cliDir = conf.rcPath || process.cwd()
+  const cliDir = conf.rcPath
   const cPath = conf.initConf.coursePath || 'src'
 
   const srcPath = path.join(cliDir, cPath)
@@ -178,8 +181,8 @@ module.exports = function (vorpal, options) {
   vorpal
     .command(cmdNameDesc, cmdMsg)
     .alias('te')
-    .option('-a, --all', 'all option on, no prompt')
-    .option('-x, --xls', 'generate xlsx file for tran')
+    .option('-a, --all', 'all courses, no prompt')
+    // .option('-x, --xls', 'generate xlsx file for tran')
     .action(cmdAction)
 // .hidden()
 }
