@@ -10,14 +10,17 @@ const toTxt = require('html-to-text')
 const chalk = require('chalk')
 const blue = chalk.cyan
 
+const utils = require('../utils')
+const cfes = utils.checkFileExistsSync
+
 const testData = fs.readJsonSync(path.join(__dirname, '../sandbox/trad/translations/course-00/tradData.json'))
 
 const defHeader = [
-  'reference',
-  'version EN',
-  'version ES',
-  'version EN /* no-markup */',
-  'version ES /* no-markup */',
+  'REFERENCE',
+  'SOURCE',
+  'TARGET',
+  'SOURCE /* no-markup */',
+  'TARGET/* no-markup */',
   'Translation AXA',
   'Comments AXA'
 ]
@@ -52,7 +55,12 @@ function createWorkBook (initData, pth,  header) {
   const data = [header, ...prepareData(initData)]
   const maxRow = data.length
   const maxCell = data[0].length
-  var workbook = excelbuilder.createWorkbook(pth, baseName + 'Ga.xlsx')
+  let fileName = baseName + '-Ga.xlsx'
+
+  if (cfes(path.join(pth,fileName))) {
+    fileName = baseName+ '-Ga-' + new Date().valueOf() +'.xlsx'
+  }
+  var workbook = excelbuilder.createWorkbook(pth, fileName)
 
   // Create a new worksheet with 10 columns and 12 rows
   var sheet1 = workbook.createSheet('adapt-text', maxCell, maxRow)
