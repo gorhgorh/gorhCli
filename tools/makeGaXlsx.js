@@ -1,16 +1,16 @@
 'use strict'
 const debug = require('debug')('gorhCli:' + 'makeXlsx' + 'Cmd')
 debug('starting xlsx genration')
-const fs = require('fs-extra')
-const path = require('path')
-const xlsx = require('xlsx')
+// const fs = require('fs-extra')
+// const path = require('path')
+// const xlsx = require('xlsx')
 const excelbuilder = require('msexcel-builder')
 const toTxt = require('html-to-text')
 
 const chalk = require('chalk')
 const blue = chalk.cyan
 
-const testData = fs.readJsonSync(path.join(__dirname, '../sandbox/trad/translations/course-00/tradData.json'))
+// const testData = fs.readJsonSync(path.join(__dirname, '../sandbox/trad/translations/course-00/tradData.json'))
 
 const defHeader = [
   'reference',
