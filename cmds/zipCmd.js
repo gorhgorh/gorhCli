@@ -90,9 +90,9 @@ function zipDirs (args, cb) {
 
   let cliDir = process.cwd()
   // TODO : investigate for reason of the bad cwd in make cmd
-  if (cliDir === path.join(process.cwd(),'../', conf.coursePath)) {
+  if (cliDir === path.join(process.cwd(), '../', conf.coursePath)) {
     debug(red('make'))
-    cliDir = path.join(process.cwd(),'../')
+    cliDir = path.join(process.cwd(), '../')
   }
   let buildsPath = path.join(cliDir, conf.buildsPath)
 

@@ -76,7 +76,7 @@ function initTasks (initTasksArr, self, cb) {
       case 'gitInit':
         debug(red('----------'))
         debug(red('----------'))
-        debug(process.cwd(), checkFileExistsSync(path.join(process.cwd()), '.git')  )
+        debug(process.cwd(), checkFileExistsSync(path.join(process.cwd()), '.git'))
         debug(red('----------'))
         debug(red('----------'))
         if (checkFileExistsSync(path.join(process.cwd()), '.git') !== true) {

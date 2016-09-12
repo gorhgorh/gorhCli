@@ -111,7 +111,16 @@ function createWorkBook (initData, pth, header) {
   let fileName = baseName + '-Ga.xlsx'
 
   if (cfes(path.join(pth, fileName))) {
-    fileName = baseName + '-Ga-' + new Date().valueOf() + '.xlsx'
+    const revision = require('child_process')
+      .execSync('git rev-parse HEAD')
+      .toString().trim().slice(0, 7)
+    fileName = baseName + '-Ga-' + revision + '.xlsx'
+    if (cfes(path.join(pth, fileName))) {
+      fileName = baseName + '-Ga-' + revision + '##' + new Date().valueOf() + '.xlsx'
+    }
+    debug(revision)
+
+    // fileName = baseName + '-Ga-' + new Date().valueOf() + '.xlsx'
   }
   var workbook = excelbuilder.createWorkbook(pth, fileName)
 

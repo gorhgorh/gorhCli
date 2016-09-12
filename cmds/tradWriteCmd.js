@@ -1,7 +1,7 @@
 'use strict'
-const cmdName = 'trad extract'
+const cmdName = 'trad write'
 const cmdNameDesc = cmdName // + ' [dirnames...]'
-const cmdMsg = 'extract fields to translate for courses'
+const cmdMsg = 'write transalted json for courses'
 const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 
 const _ = require('lodash')
@@ -9,52 +9,51 @@ const path = require('path')
 const fs = require('fs-extra')
 
 const trad = require('adapt-node-transaltion')
-const makeXlx = require('../tools/makeGaXlsx')
-
-// const shelljs = require('shelljs')
-// const exec = shelljs.exec
-// const which = shelljs.which
-
-// const archiver = require('archiver')
-// const async = require('async')
+const wrTrad = require('../tools/writeTrad')
+const makeTrO = wrTrad.makeTrO
+const replaceFile = wrTrad.replaceFile
 
 const chalk = require('chalk')
 const blue = chalk.cyan
 const red = chalk.red
 const green = chalk.green
-// const mag = chalk.magenta
 
 const utils = require('../utils')
-const checkFileExistsSync = utils.checkFileExistsSync
-// const checkDeps = utils.checkDeps
-// const filterExistingDirs = utils.filterExistingDirs
-// const makePromtChoices = utils.makePromtChoices
+const cfes = utils.checkFileExistsSync
 const listDirs = utils.listDirs
-// const symCourse = utils.symCourse
 
 const confMan = require('../confMan')
 const getConf = confMan.getConf
 
-function extractTrad (courseName, conf) {
-  const trDir = conf.initConf.tradFolder || 'trads'
+function writeTrad (courseName, conf, self) {
+  const trDir = conf.initConf.tradOutFolder || 'translations/out'
 
-  const srcP = path.join(conf.rcPath, conf.initConf.coursePath, courseName)
+  const srcP = path.join(conf.rcPath, conf.initConf.tradFolder, courseName)
   const trP = path.join(conf.rcPath, trDir, courseName)
+
+  if (cfes(path.join(srcP, 'tradData.json')) !== true) {
+    debug(blue('no tradData.json file'))
+    return false
+  }
+
+  const tradObj = makeTrO(fs.readJsonSync(path.join(srcP, 'tradData.json'))
+)
+
+  // debug(tradObj)
 
   const fileNames = [
     'config.json',
     'en/course.json',
     'en/contentObjects.json',
     'en/articles.json',
-    'en/blocks.json',
     'en/components.json'
   ].filter(function (file) {
-    const isFileExists = checkFileExistsSync(path.join(srcP, file))
+    const isFileExists = cfes(path.join(srcP, file))
     debug(file, blue('exists', isFileExists))
-    return checkFileExistsSync(path.join(srcP, file))
+    return cfes(path.join(srcP, file))
   })
   if (fileNames.length < 1) {
-    debug(red('no file to translate, return'))
+    debug(red('no file to write, return'))
     // self.log(blue('no file to translate'))
     return false
   }
@@ -72,46 +71,31 @@ function extractTrad (courseName, conf) {
   const tArr = []
 
   _.each(files, function (file) {
-    treatFile(file, tArr)
+    self.log(blue('starting', file.type))
+    var isSucces = treatFile(file, tradObj)
+    if (isSucces !== true) {
+      self.log(red('Error in'), file.type, isSucces)
+    } else {
+      self.log(blue('No Errors in'), file.type, green(isSucces))
+    }
   })
-
-  fs.writeJsonSync(path.join(trP, 'tradData.json'), tArr)
-  makeXlx(tArr, trP)
 }
 
-function treatFile (file, tArr) {
-  const fileData = fs.readJsonSync(file.fPath)
-  let modObj
-  switch (file.type) {
-    case 'config':
-      debug(blue('treating: config'))
-      modObj = trad.transConf(fileData, tArr)
-      fs.writeJsonSync(file.tPath, modObj.o)
-      break
-    case 'course':
-      debug(blue('treating: course'))
-      fs.writeJsonSync(file.tPath, trad.transCourse(fileData, tArr))
-      break
-    case 'contentObjects':
-      debug(blue('treating: contentObjects'))
-      fs.writeJsonSync(file.tPath, trad.transPage(fileData, tArr))
-      break
-    case 'articles':
-      debug(blue('treating: contentObjects'))
-      fs.writeJsonSync(file.tPath, trad.transArt(fileData, tArr))
-      break
-    case 'blocks':
-      debug(blue('treating: blocks, no action (yet)'))
-      // fs.writeJsonSync(file.tPath, trad.transPage(fileData, tArr))
-      break
-    case 'components':
-      debug(blue('treating: components'))
-      fs.writeJsonSync(file.tPath, trad.transComps(fileData, tArr))
-      break
-    default:
-      debug(red('guru meditation, unKnow type:'), file.type)
-      break
+function treatFile (file, tradObj) {
+  const tmpl = fs.readFileSync(file.fPath)
+  let replaced
+  let err
+  try {
+    replaced = replaceFile(tmpl, tradObj)
+  } catch (error) {
+    debug(red('arrrrr'))
+    replaced = false
+    err = error
+    return err
   }
+  fs.writeFileSync(file.tPath, replaced)
+
+  return true
 }
 
 function cmdAction (args, cb) {
@@ -129,7 +113,7 @@ function cmdAction (args, cb) {
   self.log(blue('start translation extraction'))
 
   const cliDir = conf.rcPath
-  const cPath = conf.initConf.coursePath || 'src'
+  const cPath = conf.initConf.tradFolder || 'translations'
 
   const srcPath = path.join(cliDir, cPath)
 
@@ -143,7 +127,7 @@ function cmdAction (args, cb) {
   } else if (dirList.length < 2) {
     // if there is only one dir
     debug('single course')
-    extractTrad(dirList[0], conf)
+    writeTrad(dirList[0], conf, self)
     self.log(blue('finished extracting'))
   } else if (cmdOpt.all === true) {
     // if the all flag is on
@@ -151,7 +135,7 @@ function cmdAction (args, cb) {
     debug(dirList.join('\n'))
     _.each(dirList, function (dir) {
       self.log(blue('treating', dir))
-      extractTrad(dir, conf)
+      writeTrad(dir, conf, self)
       self.log(blue('extraction done:', dir))
     })
     self.log(blue('finished extracting'))
@@ -169,7 +153,7 @@ function cmdAction (args, cb) {
       }
       _.each(result.chosenList, function (dir) {
         self.log(blue('treating', dir))
-        extractTrad(dir, conf)
+        writeTrad(dir, conf, self)
         self.log(blue('extraction done:', dir))
       })
       self.log(blue('finished extracting'))
@@ -180,7 +164,7 @@ function cmdAction (args, cb) {
 module.exports = function (vorpal, options) {
   vorpal
     .command(cmdNameDesc, cmdMsg)
-    .alias('te')
+    .alias('tw')
     .option('-a, --all', 'all courses, no prompt')
     // .option('-x, --xls', 'generate xlsx file for tran')
     .action(cmdAction)
