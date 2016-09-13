@@ -9,7 +9,8 @@ const path = require('path')
 const fs = require('fs-extra')
 const nb = require('node-beautify')
 
-const wrTrad = require('../tools/writeTrad')
+// const wrTrad = require('../tools/writeTrad')
+const wrTrad = require('adapt-node-transaltion')
 const makeTrO = wrTrad.makeTrO
 const replaceFile = wrTrad.replaceFile
 
