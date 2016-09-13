@@ -4,9 +4,6 @@ const debug = require('debug')('gorhCli:writeTrad')
 const fs = require('fs-extra')
 const _ = require('lodash')
 const path = require('path')
-const nb = require('node-beautify')
-
-// const tradObj = {}
 
 /**
  * create an object for lodash template from a translation.json array
@@ -23,7 +20,7 @@ function makeTrO (arr, obj) {
       obj[k] = v
     })
   })
-
+  debug('trad obj created')
   return obj
 }
 
@@ -35,9 +32,3 @@ function replaceFile (tmpl, tradObj) {
 module.exports = {
   makeTrO,
   replaceFile}
-
-// const tradArr = fs.readJSONSync(path.join(__dirname, '../sandbox/trad/translations/course-00/tradData.json'), 'utf8')
-// const template = fs.readFileSync(path.join(__dirname, '../sandbox/trad/translations/course-00/config.json'), 'utf8')
-// const demoTrad = makeTrO(tradArr)
-
-// debug(replaceFile(template, demoTrad))
