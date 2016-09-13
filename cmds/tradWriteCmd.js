@@ -7,6 +7,7 @@ const debug = require('debug')('gorhCli:' + cmdName + 'Cmd')
 const _ = require('lodash')
 const path = require('path')
 const fs = require('fs-extra')
+const nb = require('node-beautify')
 
 const wrTrad = require('../tools/writeTrad')
 const makeTrO = wrTrad.makeTrO
@@ -87,7 +88,7 @@ function treatFile (file, tradObj) {
     err = error
     return err
   }
-  fs.writeFileSync(file.tPath, replaced)
+  fs.writeFileSync(file.tPath, nb.beautifyJs(replaced))
 
   return true
 }

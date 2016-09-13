@@ -15,9 +15,6 @@ console.log(green(startMsg()))
 
 const vorpal = require('vorpal')()
 
-const utils = require('./utils')
-const checkFileExistsSync = utils.checkFileExistsSync
-
 // clear command
 const clearCmd = require('./cmds/clearCmd')
 
