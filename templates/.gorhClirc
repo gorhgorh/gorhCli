@@ -7,8 +7,7 @@
   "tradFolder": "translations/extract",
   "tradOutFolder": "translations/out",
   "translationOpts": {
-    "useAdditionalFields": true,
-    "useWordCount": false,
+    "useAdditionalFields": false,
     "useClientFields":false,
     "makeNoMarkup":false,
     "clientFields": [
