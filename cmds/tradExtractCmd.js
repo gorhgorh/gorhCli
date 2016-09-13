@@ -37,7 +37,7 @@ const getConf = confMan.getConf
 
 function extractTrad (courseName, conf) {
   const trDir = conf.initConf.tradFolder || 'translations'
-
+  const extractOpts = conf.initConf.translationOpts || {}
   const srcP = path.join(conf.rcPath, conf.initConf.coursePath, courseName)
   const trP = path.join(conf.rcPath, trDir, courseName)
 
@@ -76,7 +76,7 @@ function extractTrad (courseName, conf) {
   })
 
   fs.writeJsonSync(path.join(trP, 'tradData.json'), tArr)
-  makeXlx(tArr, trP)
+  makeXlx(tArr, trP, extractOpts)
 }
 
 function treatFile (file, tArr) {

@@ -62,14 +62,20 @@ pour le moment sont implémentés :
   - scManifest: scorm data identifiant unique
   - scScormUid: scorm data identifiant unique
 
+## UPDATED TODO
+- extract
+  - integrer les template de header pour les xlsx dans le gorhclirc
+  - ajoiuter un flag a la config pour generer la version sans markup, ou non
+
+
 ## to do
 
 - [] use rcconfig in vorpal il all cmds
 - [x] fix path issues
   - [x] get root dir from config (where the .rcfile is located) (made for swCmd)
 - [ ] add reorder command
-- [ ] add translation command
-  - [ ] make the translation system modular
+- [x] add translation command
+  - [x] make the translation system modular
   - [ ] make entry in the .gorhclirc
 - [ ] add sftp uploads (rsync ?)
 - [ ] switch to promises ?

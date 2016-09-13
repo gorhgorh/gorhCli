@@ -4,8 +4,17 @@
   "coursePath": "src",
   "buildsPath": "builds",
   "defaultConf": true,
-  "tradFolder": "translations",
+  "tradFolder": "translations/extract",
   "tradOutFolder": "translations/out",
+  "translationOpts": {
+    "useAdditionalFields": true,
+    "useWordCount": false,
+    "useClientFields":false,
+    "makeNoMarkup":false,
+    "clientFields": [
+      "add fields here"
+    ]
+  },
   "courses": [
     {
       "name" : "course-01",
