@@ -6,8 +6,8 @@ const _ = require('lodash')
 const path = require('path')
 const XLSX = require('xlsx')
 // const assert = require('assert')
-const workbook = XLSX.readFile('testWebvtt.xlsx')
-const sheetNameList = workbook.SheetNames
+// const workbook = XLSX.readFile('testWebvtt.xlsx')
+// const sheetNameList = workbook.SheetNames
 
 var isEq = require('is-equal');
 
