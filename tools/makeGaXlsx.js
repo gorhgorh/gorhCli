@@ -93,6 +93,7 @@ function createWorkBook (initData, pth, opts, header) {
   // apply cmd options
   // if clientFields opt is true
   if (opts.makeNoMarkup) {
+    debug('no Markup')
     defHeader.push(...noMk)
   }
   if (opts.useClientFields) {
@@ -160,9 +161,9 @@ function createWorkBook (initData, pth, opts, header) {
         // defHeader.push(...noMk)
         if (dI === 1) {
           // debug(data)
-          const cleaned = toTxt.fromString(data, {uppercaseHeadings: false})
+          const cleaned = toTxt.fromString(data.replace(/&nbsp;/g, ' '), {uppercaseHeadings: false})
             .replace(/\[([^]]+)\]/g, '') // clean images
-            .replace(/\n/, '\n ') // add a space before new lines
+            .replace(/\n/g, '\n ') // add a space before new lines            
           sheet1.set(4, i + 1, cleaned)
         }
       }
