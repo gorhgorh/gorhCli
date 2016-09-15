@@ -38,7 +38,7 @@ const manCmd = require('./cmds/manifestCmd')
 
 // build command
 const build = require('./cmds/buildCmd')
-const buildCmd = build.Cmd
+// const buildCmd = build.Cmd
 
 // build command
 const zipCmd = require('./cmds/zipCmd')
@@ -57,7 +57,7 @@ vorpal.iConf = cliConf
 manCmd(vorpal, cliConf)
 
 // create manifests
-buildCmd(vorpal, cliConf)
+// buildCmd(vorpal, cliConf)
 
 // command to build, make manifests and zips all the dirs in the rc file
 vorpal
@@ -93,6 +93,7 @@ vorpal
 
 vorpal
   .delimiter('gorhCLI $')
+  .use(build)
   .use(currCmd)
   .use(tradExtract)
   .use(tradWrite)
