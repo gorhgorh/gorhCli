@@ -82,10 +82,10 @@ function fillSheet (data, sheet) {
 /**
  * create a workbook from a translation array and writes it down
  *
- * @param {Array} initData tranlation array
+ * @param {array} initData tranlation array
  * @param {String} pth a path to write the xlsx to
- * @param {Array} header an array containing the header's titles
  * @param {Object} opts cli extraction option object from .gorhclirc
+ * @param {Array} header an array containing the header's titles
  */
 function createWorkBook (initData, pth, opts, header) {
   debug(opts)
