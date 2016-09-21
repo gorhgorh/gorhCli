@@ -32,7 +32,7 @@ function cmdAction (args, cb) {
   const self = this
   const opts = args.options
 
-  const conf = getConf()
+  const conf = self.parent.iConf.initConf || getConf()
   let cliDir = process.cwd()
 
   debug(blue(cmdName, 'start'))
