@@ -90,7 +90,7 @@ function checkSheet (sheet, crit) {
 }
 
 function extractSheet (wb, sheetName) {
-
+  
   const curSheet = wb.Sheets[sheetName]
 
   return XLSX.utils.sheet_to_json(curSheet)
