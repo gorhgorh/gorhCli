@@ -82,17 +82,18 @@ function fillSheet (data, sheet) {
 /**
  * create a workbook from a translation array and writes it down
  *
- * @param {Array} initData tranlation array
+ * @param {array} initData tranlation array
  * @param {String} pth a path to write the xlsx to
- * @param {Array} header an array containing the header's titles
  * @param {Object} opts cli extraction option object from .gorhclirc
+ * @param {Array} header an array containing the header's titles
  */
 function createWorkBook (initData, pth, opts, header) {
   debug(opts)
-
+  if (!opts) opts = {}
   // apply cmd options
   // if clientFields opt is true
   if (opts.makeNoMarkup) {
+    debug('no Markup')
     defHeader.push(...noMk)
   }
   if (opts.useClientFields) {
@@ -125,7 +126,10 @@ function createWorkBook (initData, pth, opts, header) {
   // }
 
   if (!header) header = defHeader
-  const baseName = pth.split('/').pop()
+  // debug("baseName")
+  // debug(pth)
+  let baseName = pth.split('/')
+  baseName = baseName.pop()
   // Create a new workbook file in current working-path
   const data = [header, ...prepareData(initData)]
   const maxRow = data.length
@@ -146,7 +150,6 @@ function createWorkBook (initData, pth, opts, header) {
   }
   var workbook = excelbuilder.createWorkbook(pth, fileName)
 
-
   // Create worksheets
   var sheet1 = workbook.createSheet('adapt-text', maxCell, maxRow)
   var sheet2 = workbook.createSheet('video_transcripts', defHeaderTr.length, maxRow)
@@ -160,9 +163,9 @@ function createWorkBook (initData, pth, opts, header) {
         // defHeader.push(...noMk)
         if (dI === 1) {
           // debug(data)
-          const cleaned = toTxt.fromString(data, {uppercaseHeadings: false})
+          const cleaned = toTxt.fromString(data.replace(/&nbsp;/g, ' '), {uppercaseHeadings: false})
             .replace(/\[([^]]+)\]/g, '') // clean images
-            .replace(/\n/, '\n ') // add a space before new lines
+            .replace(/\n/g, '\n ') // add a space before new lines            
           sheet1.set(4, i + 1, cleaned)
         }
       }
@@ -180,5 +183,7 @@ function createWorkBook (initData, pth, opts, header) {
     }
   })
 }
+
+// createWorkBook()
 
 module.exports = createWorkBook

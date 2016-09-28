@@ -1,9 +1,6 @@
 'use strict'
 const debug = require('debug')('gorhCli:writeTrad')
-
-const fs = require('fs-extra')
 const _ = require('lodash')
-const path = require('path')
 
 /**
  * create an object for lodash template from a translation.json array
@@ -25,7 +22,13 @@ function makeTrO (arr, obj) {
 }
 
 function replaceFile (tmpl, tradObj) {
-  const template = _.template(tmpl)
+  let template
+  try {
+    template = _.template(tmpl)
+  } catch (error) {
+    debug(error)
+    return false
+  }
   return template(tradObj)
 }
 

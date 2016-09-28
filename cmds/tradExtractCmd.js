@@ -51,7 +51,7 @@ function extractTrad (courseName, conf) {
   ].filter(function (file) {
     const isFileExists = checkFileExistsSync(path.join(srcP, file))
     debug(file, blue('exists', isFileExists))
-    return checkFileExistsSync(path.join(srcP, file))
+    return isFileExists
   })
   if (fileNames.length < 1) {
     debug(red('no file to translate, return'))
