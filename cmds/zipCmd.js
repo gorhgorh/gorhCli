@@ -19,25 +19,35 @@ const listDirs = utils.listDirs
 const checkFileExistsSync = utils.checkFileExistsSync
 
 /**
+ * zip the content of a directory
  *
- *
- * @param {string} dirName name of the dir to zip
+ * @param {String} dirName name of the dir to zip
  * @param {string} tarPath path to write the archive to
  * @param {string} buildsPath path to dir containing the dir to zip
- * @param {obj} self vorpal obj
+ * @param {Object} self vorpal obj
+ * @param [string] name name of the zip file, optional
  * @param {function} cb func
  */
-
-function zipDir (dirName, tarPath, buildsPath, self, cb) {
-  debug('cwd:', process.cwd())
-  debug('zipping:', dirName)
+function zipDir (dirName, tarPath, buildsPath, self, name, zipOpt, cb) {
+  const force = (zipOpt.force === true) ? true : ''
+  if (!name) name = dirName
+  debug('zipping:', name, force)
   const archive = archiver('zip')
-  const output = fs.createWriteStream(path.join(tarPath, dirName + '.zip'))
+  const zName = name + '.zip'
+  const zPath = path.join(tarPath, zName)
+  if (checkFileExistsSync(zPath) && !force === true) {
+    debug('carammba file exists')
+    self.log(blue('file already exists clear it or use the force'))
+    if (cb) return cb()
+    else return
+  }
+
+  const output = fs.createWriteStream(zPath)
 
   self.log(blue('starting archive:'), dirName)
 
   output.on('close', function () {
-    self.log(green('archive'), dirName, green('written, total bytes:'), archive.pointer())
+    self.log(green('archive'), zName, green('written, total bytes:'), archive.pointer())
   })
 
   archive.on('error', function (err) {
@@ -45,7 +55,9 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
   })
 
   archive.pipe(output)
+
   const buildPath = path.join(buildsPath, dirName)
+
   archive.bulk([
     { expand: true, cwd: buildPath, src: ['**'] }
   ])
@@ -60,40 +72,58 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
  * @param {function} cb vorpal cb
  * @returns {function} cb vorpal cb || true
  */
-
 function zipDirs (args, cb) {
   // get the configuration file
   const self = this
   const opts = args.options
-  debug(opts)
+  const conf = self.parent.iConf || getConf()
+  const zipOpt = {
+    force: false
+  }
+
+  if (_.has(opts, 'force') === true) {
+    zipOpt.force = true
+  }
+
   if (_.has(opts, 'dir') === true) {
-    const zPath = path.join(process.cwd(), opts.dir)
+    const zPath = path.join(conf.cliDir, opts.dir)
     if (checkFileExistsSync(zPath) !== true) {
       self.log('dir does not exists', zPath)
       return cb()
     }
     debug('io', checkFileExistsSync(zPath))
-    zipDir(opts.dir, process.cwd(), process.cwd(), self)
+    let zipName = opts.dir.replace(/\/$/, '') // remove trailing slash
+
+    if (/\//.test(zipName)) {
+      const dirStr = opts.dir.split('/')
+      zipName = dirStr[dirStr.length - 1]
+      // const DirName
+    }
+    debug('dirStr', zipName)
+    // const fileName =
+
+    zipDir(opts.dir, conf.cliDir, conf.cliDir, self, zipName, zipOpt, cb)
     return true
   }
 
-  const conf = getConf()
-  if (_.has(conf, 'buildsPath') !== true) {
+  if (_.has(conf.initConf, 'buildsPath') !== true) {
     self.log(red('no build paths'))
     return cb()
   }
 
+  const bPath = conf.initConf.buildsPath
+
   let cliDir = process.cwd()
   // TODO : investigate for reason of the bad cwd in make cmd
-  if (cliDir === path.join(process.cwd(), '../', conf.coursePath)) {
+  if (cliDir === path.join(process.cwd(), '../', conf.initConf.coursePath)) {
     debug(red('make'))
     cliDir = path.join(process.cwd(), '../')
   }
-  let buildsPath = path.join(cliDir, conf.buildsPath)
+  let buildsPath = path.join(cliDir, bPath)
 
   if (checkFileExistsSync(buildsPath) === false) {
     self.log(red('build paths does not exists', buildsPath))
-    let testPath = path.join(buildsPath, '../../', conf.buildsPath)
+    let testPath = path.join(buildsPath, '../../', bPath)
     debug('testPath', testPath, checkFileExistsSync(testPath))
     if (checkFileExistsSync(testPath) === true) {
       buildsPath = testPath
@@ -112,7 +142,7 @@ function zipDirs (args, cb) {
   fs.ensureDirSync(archivesPath)
 
   _.each(dirList, function (dirName) {
-    zipDir(dirName, archivesPath, buildsPath, self)
+    zipDir(dirName, archivesPath, buildsPath, self, dirName, zipOpt)
   })
 }
 
@@ -121,5 +151,6 @@ module.exports = function (vorpal, options) {
     .command(cmdName, cmdMsg)
     .alias('z')
     .option('-d, --dir <dir>', 'scorm dir to zip.')
+    .option('-f, --force', 'if the zip already exists, erase it')
     .action(zipDirs)
 }

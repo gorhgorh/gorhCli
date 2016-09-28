@@ -147,7 +147,6 @@ function createWorkBook (initData, pth, opts, header) {
   }
   var workbook = excelbuilder.createWorkbook(pth, fileName)
 
-
   // Create worksheets
   var sheet1 = workbook.createSheet('adapt-text', maxCell, maxRow)
   var sheet2 = workbook.createSheet('video_transcripts', defHeaderTr.length, maxRow)
