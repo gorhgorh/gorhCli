@@ -31,8 +31,13 @@ const checkFileExistsSync = utils.checkFileExistsSync
 function zipDir (dirName, tarPath, buildsPath, self, cb) {
   debug('cwd:', process.cwd())
   debug('zipping:', dirName)
+  dirName
+    .replace(/\\/, '')
+    .replace(/\//, '')
   const archive = archiver('zip')
-  const output = fs.createWriteStream(path.join(tarPath, dirName + '.zip'))
+  const archP = path.join(tarPath, dirName + '.zip')
+  debug(dirName)
+  const output = fs.createWriteStream(archP)
 
   self.log(blue('starting archive:'), dirName)
 
@@ -51,6 +56,7 @@ function zipDir (dirName, tarPath, buildsPath, self, cb) {
   ])
 
   archive.finalize()
+  if (cb) cb()
 }
 
 /**

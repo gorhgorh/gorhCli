@@ -89,7 +89,7 @@ function fillSheet (data, sheet) {
  */
 function createWorkBook (initData, pth, opts, header) {
   debug(opts)
-
+  if (!opts) opts = {}
   // apply cmd options
   // if clientFields opt is true
   if (opts.makeNoMarkup) {
@@ -125,7 +125,10 @@ function createWorkBook (initData, pth, opts, header) {
   // }
 
   if (!header) header = defHeader
-  const baseName = pth.split('/').pop()
+  // debug("baseName")
+  // debug(pth)
+  let baseName = pth.split('/')
+  baseName = baseName.pop()
   // Create a new workbook file in current working-path
   const data = [header, ...prepareData(initData)]
   const maxRow = data.length
@@ -180,5 +183,7 @@ function createWorkBook (initData, pth, opts, header) {
     }
   })
 }
+
+// createWorkBook()
 
 module.exports = createWorkBook
