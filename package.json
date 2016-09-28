@@ -1,6 +1,6 @@
 {
   "name": "gorhcli",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "cli for working on adapt-learning course with multiple courses",
   "main": "index.js",
   "scripts": {

@@ -6,6 +6,7 @@
   "defaultConf": true,
   "tradFolder": "translations/extract",
   "tradOutFolder": "translations/out",
+  "tradEditFolder": "translations/editTrad",
   "translationOpts": {
     "useAdditionalFields": false,
     "useClientFields":false,

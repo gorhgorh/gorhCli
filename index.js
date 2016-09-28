@@ -17,6 +17,7 @@ const vorpal = require('vorpal')()
 
 // clear command
 const clearCmd = require('./cmds/clearCmd')
+const dTC = require('./cmds/dTC')
 
 // rc command
 const rcCmd = require('./cmds/rcCmd')
@@ -102,5 +103,6 @@ vorpal
   .use(zipCmd)
   .use(initCmd)
   .use(switchCmd)
+  .use(dTC)
   .show()
   .parse(process.argv)

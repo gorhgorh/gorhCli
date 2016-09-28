@@ -328,10 +328,10 @@ function listDirs (dirsPath, regex) {
           debug('match', file)
           return true
         }
-        // debug('do not match:regex', file, regex)
+        debug('do not match:regex', file, regex)
         return false
       }
-      // debug('match:isdir')
+      debug('match:isdir')
       return true
     }
     return false
