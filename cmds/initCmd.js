@@ -71,12 +71,9 @@ function initTasks (initTasksArr, self, cb) {
         exec('svn export https://github.com/gorhgorh/baseNodeRepo/trunk ./ --force')
         break
       case 'gitInit':
-        debug(red('----------'))
-        debug(red('----------'))
-        debug(process.cwd(), checkFileExistsSync(path.join(process.cwd()), '.git'))
-        debug(red('----------'))
-        debug(red('----------'))
-        if (checkFileExistsSync(path.join(process.cwd()), '.git') !== true) {
+        const isGitDir = checkFileExistsSync(path.join(process.cwd()), '.git')
+        debug(process.cwd(),'is a git repo', isGitDir)
+        if (cisGitDir !== true) {
           gitC = true
           self.log(mag('initialising git repo'))
           exec('git init')

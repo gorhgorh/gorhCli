@@ -1,5 +1,7 @@
 # gorhCli
 
+![https://david-dm.org/gorhgorh/gorhcli.svg]
+
 expériences aves vorpaljs pour faire une cli et automatiser certains workflows autour d'adapt
 
 ## usage 

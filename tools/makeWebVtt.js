@@ -28,6 +28,7 @@ function makeWebVttStr (data) {
 }
 
 function splitVtt (allVtts) {
+debug(allVtts[0])
   let curVtt = allVtts[0].FILE
   let curArr = []
   const allVttArr = []
@@ -76,12 +77,17 @@ function writeVtts (allVttArr, lang, destPath) {
  */
 function makeWebVttFromFile (fileP, outP, sheetname, lang) {
   // remove the entries without data
-  const filtered = extractSheet(fileP, 'video_transcripts').filter(function (entry) {
+  const filtered = extractSheet(fileP, sheetname).filter(function (entry) {
     return (_.has(entry, ('SOURCE')))
   })
+  debug(filtered)
+  if (filtered.length < 1){
+    debug('WebVTT array "filtered" is empty')  
+    return false
+  }
   writeVtts(splitVtt(filtered), lang, outP)
 }
 
-makeWebVttFromFile('testWebvttBig.xlsx', './outVtt/', 'video_transcripts', 'es')
+makeWebVttFromFile('Module 2 AXA MO 2 ES_complet_NEW_VIDEO_PARTS_V3.xlsx', './outVtt/', 'video_transcripts', 'es')
 
 module.exports = makeWebVttFromFile
